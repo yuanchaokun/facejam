@@ -1648,6 +1648,13 @@
             document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
             
+            // 如果是图片类型，预加载图片
+            if (type === 'image') {
+                loadSticker(content).then(() => {
+                    console.log('Sticker preloaded:', content);
+                });
+            }
+            
             // 桌面端：改变鼠标样式，提示可以点击添加
             if (window.innerWidth >= 1024) {
                 canvas.style.cursor = 'crosshair';
@@ -1680,12 +1687,22 @@
                 state.isDragging = !isHandle;
                 if (!isHandle) state.dragOffset = { x: pos.x - state.masks[clickedIndex].x, y: pos.y - state.masks[clickedIndex].y };
             } else {
-                state.masks.push({
+                // 添加新贴纸
+                const newMask = {
                     x: pos.x, y: pos.y, size: 100, type: state.manualTool.type, content: state.manualTool.content
-                });
+                };
+                state.masks.push(newMask);
                 state.selectedMaskIndex = state.masks.length - 1;
                 state.isResizing = false; state.isDragging = false;
                 updateMaskCount();
+                
+                // 如果是图片类型，确保图片已加载
+                if (newMask.type === 'image') {
+                    loadSticker(newMask.content).then(() => {
+                        render();
+                    });
+                    return; // 等待图片加载后再渲染
+                }
             }
             render();
         }
