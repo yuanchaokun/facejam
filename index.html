@@ -483,12 +483,12 @@
                 </div>
                 
                 <!-- 初始空状态 -->
-                <div id="placeholderText" onclick="triggerUpload()" class="absolute inset-0 z-20 flex flex-col items-center justify-center text-slate-400 cursor-pointer hover:bg-gray-50 transition-colors p-6 pb-8">
+                <div id="placeholderText" onclick="triggerUpload()" class="absolute inset-0 z-20 flex flex-col items-center justify-start text-slate-400 cursor-pointer hover:bg-gray-50 transition-colors p-6 pt-16 pb-8">
                     <!-- 上方：介绍卡片 -->
                     <div class="w-full max-w-md mb-4">
                         <div class="relative bg-gradient-to-br from-pink-100 via-purple-100 to-yellow-100 rounded-3xl p-5 border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
                             <!-- 装饰性元素 -->
-                            <div class="absolute top-2 right-2 text-4xl opacity-20 animate-bounce">🎨</div>
+                            <div class="absolute top-2 right-2 text-4xl opacity-20">🎨</div>
                             <div class="absolute bottom-2 left-2 text-3xl opacity-20 animate-pulse">✨</div>
                             
                             <!-- 主标题 -->
@@ -498,7 +498,7 @@
                                 </h2>
                                 <div class="flex items-center justify-center gap-2">
                                     <span class="text-3xl font-black text-black">贴脸酱</span>
-                                    <span class="text-3xl animate-bounce">🥰</span>
+                                    <span class="text-3xl">🥰</span>
                                 </div>
                                 <p class="text-xs text-gray-600 font-medium mt-2">
                                     AI 智能识别 · 一键打码 · 趣味满分
@@ -1823,6 +1823,12 @@
             modal.classList.add('flex');
             document.getElementById('activationCodeInput').value = '';
             document.getElementById('activationCodeInput').focus();
+            
+            // 移动端：隐藏右侧"再贴一次"按钮
+            const rerollControls = document.getElementById('rerollControls');
+            if (rerollControls && window.innerWidth < 1024) {
+                rerollControls.style.display = 'none';
+            }
         }
         
         // 关闭激活码弹窗
@@ -1830,6 +1836,12 @@
             const modal = document.getElementById('activationModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            
+            // 移动端：恢复右侧"再贴一次"按钮显示
+            const rerollControls = document.getElementById('rerollControls');
+            if (rerollControls && window.innerWidth < 1024 && state.img) {
+                rerollControls.style.display = 'flex';
+            }
         }
         
         // 提交激活码
