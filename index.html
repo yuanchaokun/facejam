@@ -536,6 +536,13 @@
                 </div>
             </div>
             
+            <!-- 移动端介绍文字 - 仅在未上传时显示 -->
+            <div id="mobileIntro" class="lg:hidden mt-3 text-center">
+                <p class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 animate-pulse">
+                    有趣的人像马赛克工具——贴脸酱 🥰
+                </p>
+            </div>
+            
             <!-- 重随按钮 - 桌面端保持在照片上 -->
             <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 lg:flex flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
                 <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">再贴一次👇</div>
@@ -1130,6 +1137,10 @@
                     if (mobileReroll) mobileReroll.classList.add('hidden');
                     document.getElementById('rerollControlsDesktop').classList.add('hidden');
                     document.getElementById('uploadBtnText').innerText = i18n[state.language].changePhoto;
+                    
+                    // 隐藏移动端介绍文字
+                    const mobileIntro = document.getElementById('mobileIntro');
+                    if (mobileIntro) mobileIntro.classList.add('hidden');
                     
                     // 移动端：显示贴纸选择区
                     const stickerSection = document.getElementById('stickerSection');
