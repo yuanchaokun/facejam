@@ -628,8 +628,8 @@
                     </div>
                 </div>
                 
-                <!-- 底部状态栏 - 移动端隐藏 -->
-                <div class="hidden lg:flex p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold justify-between items-center shrink-0">
+                <!-- 底部状态栏 - 全端显示 -->
+                <div class="flex p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold justify-between items-center shrink-0">
                     <div class="flex items-center gap-1 sm:gap-2 min-w-0">
                         <span class="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0" id="aiStatusDot"></span>
                         <span id="aiStatusText" class="truncate">AI 准备中...</span>
@@ -649,6 +649,17 @@
             <input type="file" id="customFileUpload" accept="image/*" multiple class="hidden" onclick="this.value=null" onchange="handleCustomFileUpload(event)" />
         </div>
     </main>
+
+    <!-- 移动端右侧竖直按钮 - 贴边悬浮 -->
+    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1.5 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
+        <div class="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-l whitespace-nowrap shadow-md text-right">再贴一次👇</div>
+        <button onclick="rerollCategory('default')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-90 transition-all shadow-md rounded-l-xl" title="表情">😀</button>
+        <button onclick="rerollCategory('animals')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-90 transition-all shadow-md rounded-l-xl" title="动物">🐶</button>
+        <button onclick="rerollCategory('kay')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-90 transition-all shadow-md rounded-l-xl" title="Kay">🎨</button>
+        <button onclick="rerollCategory('plants')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-90 transition-all shadow-md rounded-l-xl" title="植物">🌿</button>
+        <button onclick="rerollCategory('chaos')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-90 transition-all shadow-md rounded-l-xl" title="大乱炖">🥘</button>
+        <button onclick="rerollCategory('custom')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-90 transition-all shadow-md rounded-l-xl" title="我的">📤</button>
+    </div>
 
     <script>
         // 数据
