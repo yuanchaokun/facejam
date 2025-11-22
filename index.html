@@ -1542,7 +1542,30 @@
                 alert("请先上传自定义图片"); switchTab('custom'); return;
             }
             showLoading(true, false);
-            document.getElementById('loadingTitle').innerText = i18n[state.language].loadingApplying;
+            
+            // 根据类别显示不同的有趣文案
+            const loadingMessages = {
+                'zh': {
+                    'default': '😀 正在贴表情...',
+                    'animals': '🐶 正在召唤小动物...',
+                    'kay': '🎨 正在施展Kay魔法...',
+                    'plants': '🌿 正在种植小花花...',
+                    'chaos': '🥘 正在大乱炖中...',
+                    'custom': '📤 正在应用你的创意...'
+                },
+                'en': {
+                    'default': '😀 Applying emojis...',
+                    'animals': '🐶 Summoning animals...',
+                    'kay': '🎨 Kay\'s magic at work...',
+                    'plants': '🌿 Planting flowers...',
+                    'chaos': '🥘 Mixing chaos...',
+                    'custom': '📤 Applying your creativity...'
+                }
+            };
+            
+            const message = loadingMessages[state.language][category] || loadingMessages[state.language]['default'];
+            document.getElementById('loadingTitle').innerText = message;
+            
             await new Promise(r => setTimeout(r, 800));
             generateMasksFromDetections(category);
             showLoading(false);
@@ -1749,7 +1772,13 @@
             
             // 显示激光扫描特效
             showLoading(true, false);
-            document.getElementById('loadingTitle').innerText = i18n[state.language].loadingApplying;
+            
+            // 自选模式的有趣文案
+            const multiSelectMessages = {
+                'zh': '✨ 正在精准贴脸中...',
+                'en': '✨ Precisely applying...'
+            };
+            document.getElementById('loadingTitle').innerText = multiSelectMessages[state.language];
             document.getElementById('loadingProgress').style.width = '30%';
             
             setTimeout(() => {
