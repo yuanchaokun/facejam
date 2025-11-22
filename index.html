@@ -542,8 +542,8 @@
             </div>
         </div>
 
-        <!-- 右侧：工具栏 - 移动端完全隐藏 -->
-        <div id="stickerSection" class="hidden lg:flex order-1 lg:order-2 lg:h-full lg:w-[380px] w-full flex-col min-h-0 shrink-0">
+        <!-- 右侧：工具栏 -->
+        <div id="stickerSection" class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0 hidden lg:flex">
             <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full border-r-4 border-black">
                 <!-- 选项卡 -->
                 <div class="flex border-b-2 border-black bg-white shrink-0">
@@ -649,17 +649,6 @@
             <input type="file" id="customFileUpload" accept="image/*" multiple class="hidden" onclick="this.value=null" onchange="handleCustomFileUpload(event)" />
         </div>
     </main>
-
-    <!-- 移动端右侧竖直按钮 - 更靠右 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1.5 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
-        <div class="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-l whitespace-nowrap shadow-md">再贴一次👇</div>
-        <button onclick="rerollCategory('default')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-90 transition-all shadow-md rounded-l-xl" title="表情">😀</button>
-        <button onclick="rerollCategory('animals')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-90 transition-all shadow-md rounded-l-xl" title="动物">🐶</button>
-        <button onclick="rerollCategory('kay')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-90 transition-all shadow-md rounded-l-xl" title="Kay">🎨</button>
-        <button onclick="rerollCategory('plants')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-90 transition-all shadow-md rounded-l-xl" title="植物">🌿</button>
-        <button onclick="rerollCategory('chaos')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-90 transition-all shadow-md rounded-l-xl" title="大乱炖">🥘</button>
-        <button onclick="rerollCategory('custom')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-90 transition-all shadow-md rounded-l-xl" title="我的">📤</button>
-    </div>
 
     <script>
         // 数据
@@ -1116,9 +1105,17 @@
                     resizeCanvas();
                     document.getElementById('placeholderText').classList.add('hidden');
                     document.getElementById('downloadBtn').classList.remove('hidden');
-                    document.getElementById('rerollControls').classList.add('hidden'); 
+                    const mobileReroll = document.getElementById('rerollControls');
+                    if (mobileReroll) mobileReroll.classList.add('hidden');
                     document.getElementById('rerollControlsDesktop').classList.add('hidden');
                     document.getElementById('uploadBtnText').innerText = i18n[state.language].changePhoto;
+                    
+                    // 移动端：显示贴纸选择区
+                    const stickerSection = document.getElementById('stickerSection');
+                    if (stickerSection && window.innerWidth < 1024) {
+                        stickerSection.classList.remove('hidden');
+                        stickerSection.classList.add('flex');
+                    }
                     
                     showLoading(true, true);
                     await detectFacesAndEmotions();
@@ -1331,8 +1328,11 @@
                 
                 if (results.length > 0) {
                      generateMasksFromDetections();
-                     document.getElementById('rerollControls').classList.remove('hidden');
-                     document.getElementById('rerollControls').classList.add('flex');
+                    const mobileReroll = document.getElementById('rerollControls');
+                    if (mobileReroll && window.innerWidth < 1024) {
+                        mobileReroll.classList.remove('hidden');
+                        mobileReroll.classList.add('flex');
+                    }
                      document.getElementById('rerollControlsDesktop').classList.remove('hidden');
                      document.getElementById('rerollControlsDesktop').classList.add('flex');
                      
