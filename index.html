@@ -1004,14 +1004,18 @@
             document.getElementById('multiSelectToggle').addEventListener('change', (e) => {
                 state.multiSelectMode = e.target.checked;
                 state.selectedEmojis = [];
+                console.log('Multi-select mode toggled:', state.multiSelectMode ? 'ON' : 'OFF');
                 updateMultiSelectUI();
                 
                 // 重新渲染当前标签页
                 if (state.activeTab === 'kay') {
+                    console.log('Re-rendering Kay stickers...');
                     renderKayStickers();
                 } else if (state.activeTab === 'custom') {
+                    console.log('Re-rendering custom stickers...');
                     renderCustomStickers();
                 } else {
+                    console.log('Re-rendering emoji grid:', state.activeTab);
                     renderEmojiGrid(state.activeTab);
                 }
             });
@@ -1840,13 +1844,22 @@
         
         // Multi-select functions
         function toggleEmojiSelection(emoji, btn) {
+            console.log('toggleEmojiSelection called:', { emoji, multiSelectMode: state.multiSelectMode });
+            
+            if (!state.multiSelectMode) {
+                console.warn('Multi-select mode is OFF, but toggleEmojiSelection was called!');
+                return;
+            }
+            
             const index = state.selectedEmojis.indexOf(emoji);
             if (index > -1) {
                 state.selectedEmojis.splice(index, 1);
                 btn.classList.remove('multi-selected');
+                console.log('Deselected:', emoji, 'Remaining:', state.selectedEmojis.length);
             } else {
                 state.selectedEmojis.push(emoji);
                 btn.classList.add('multi-selected');
+                console.log('Selected:', emoji, 'Total:', state.selectedEmojis.length);
             }
             updateMultiSelectUI();
         }
