@@ -1151,7 +1151,7 @@
                 if (state.multiSelectMode) {
                     btn.onclick = function(e) {
                         if (e.target.tagName !== 'BUTTON') {
-                            selectEmojiForMulti(url, this);
+                            toggleEmojiSelection(url, this);
                         }
                     };
                 } else {
