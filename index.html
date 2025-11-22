@@ -561,10 +561,7 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl">🎯</span>
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-bold">自选模式</span>
-                                    <span class="text-[10px] text-gray-600 font-medium">选多个emoji批量贴脸</span>
-                                </div>
+                                <span class="text-xs font-bold">自选模式（仅用选中贴图贴脸）</span>
                             </div>
                             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                                 <input type="checkbox" name="toggle" id="multiSelectToggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
@@ -631,8 +628,8 @@
                     </div>
                 </div>
                 
-                <!-- 底部状态栏 -->
-                <div class="p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold flex justify-between items-center shrink-0">
+                <!-- 底部状态栏 - 移动端隐藏 -->
+                <div class="hidden lg:flex p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold justify-between items-center shrink-0">
                     <div class="flex items-center gap-1 sm:gap-2 min-w-0">
                         <span class="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0" id="aiStatusDot"></span>
                         <span id="aiStatusText" class="truncate">AI 准备中...</span>
@@ -653,15 +650,15 @@
         </div>
     </main>
 
-    <!-- 移动端右侧竖直按钮 - 小巧靠右 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed right-1 bottom-20 z-50 flex flex-col gap-1.5 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
-        <div class="bg-black text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap shadow-md">再贴一次👇</div>
-        <button onclick="rerollCategory('default')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-90 transition-all shadow-md" title="表情">😀</button>
-        <button onclick="rerollCategory('animals')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-90 transition-all shadow-md" title="动物">🐶</button>
-        <button onclick="rerollCategory('kay')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-90 transition-all shadow-md" title="Kay">🎨</button>
-        <button onclick="rerollCategory('plants')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-90 transition-all shadow-md" title="植物">🌿</button>
-        <button onclick="rerollCategory('chaos')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-90 transition-all shadow-md" title="大乱炖">🥘</button>
-        <button onclick="rerollCategory('custom')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-90 transition-all shadow-md" title="我的">📤</button>
+    <!-- 移动端右侧竖直按钮 - 更靠右 -->
+    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1.5 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
+        <div class="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-l whitespace-nowrap shadow-md">再贴一次👇</div>
+        <button onclick="rerollCategory('default')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-90 transition-all shadow-md rounded-l-xl" title="表情">😀</button>
+        <button onclick="rerollCategory('animals')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-90 transition-all shadow-md rounded-l-xl" title="动物">🐶</button>
+        <button onclick="rerollCategory('kay')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-90 transition-all shadow-md rounded-l-xl" title="Kay">🎨</button>
+        <button onclick="rerollCategory('plants')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-90 transition-all shadow-md rounded-l-xl" title="植物">🌿</button>
+        <button onclick="rerollCategory('chaos')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-90 transition-all shadow-md rounded-l-xl" title="大乱炖">🥘</button>
+        <button onclick="rerollCategory('custom')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-90 transition-all shadow-md rounded-l-xl" title="我的">📤</button>
     </div>
 
     <script>
