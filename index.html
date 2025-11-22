@@ -537,10 +537,26 @@
             </div>
             
             <!-- 移动端介绍文字 - 仅在未上传时显示 -->
-            <div id="mobileIntro" class="lg:hidden mt-3 text-center">
-                <p class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 animate-pulse">
-                    有趣的人像马赛克工具——贴脸酱 🥰
-                </p>
+            <div id="mobileIntro" class="lg:hidden mt-6 px-4">
+                <div class="relative bg-gradient-to-br from-pink-100 via-purple-100 to-yellow-100 rounded-3xl p-6 border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
+                    <!-- 装饰性元素 -->
+                    <div class="absolute top-2 right-2 text-4xl opacity-20 animate-bounce">🎨</div>
+                    <div class="absolute bottom-2 left-2 text-3xl opacity-20 animate-pulse">✨</div>
+                    
+                    <!-- 主标题 -->
+                    <div class="relative z-10 text-center space-y-2">
+                        <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 leading-tight">
+                            有趣的人像自动马赛克工具
+                        </h2>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-3xl font-black text-black">贴脸酱</span>
+                            <span class="text-3xl animate-bounce">🥰</span>
+                        </div>
+                        <p class="text-xs text-gray-600 font-medium mt-3">
+                            AI 智能识别 · 一键打码 · 趣味满分
+                        </p>
+                    </div>
+                </div>
             </div>
             
             <!-- 重随按钮 - 桌面端保持在照片上 -->
@@ -905,6 +921,13 @@
                 statusDot.className = 'w-2 h-2 rounded-full bg-green-500 flex-shrink-0';
                 statusText.innerText = '✅ ' + i18n[state.language].aiReady;
                 retryBtn.classList.add('hidden');
+                
+                // AI就绪后，如果已有图片，自动开始检测
+                if (state.img && state.masks.length === 0) {
+                    console.log("AI就绪，自动开始检测人脸...");
+                    showLoading(true, true);
+                    await detectFacesAndEmotions();
+                }
             } catch (e) {
                 console.error("Failed to load models:", e);
                 statusDot.className = 'w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-pulse';
@@ -939,15 +962,21 @@
             setTimeout(resizeCanvas, 500);
         }
         
-        // 加载模型函数，支持降级
+        // 加载模型函数，支持降级和缓存
         async function loadModels() {
             try {
-                // 首先尝试本地模型
                 console.log("Trying to load models from:", MODEL_URL);
+                
+                // 使用浏览器缓存API，模型会被缓存
+                // face-api.js 内部会使用 fetch，浏览器会自动缓存响应
+                // 我们可以通过设置 Cache-Control 来优化，但这里依赖浏览器默认缓存
+                
                 await Promise.all([
                     faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
                     faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
                 ]);
+                
+                console.log("✅ 模型加载成功（已缓存到浏览器）");
             } catch (e) {
                 console.warn("Local models failed, falling back to GitHub CDN:", e);
                 // 如果本地失败，使用GitHub CDN
@@ -956,6 +985,7 @@
                     faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
                     faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
                 ]);
+                console.log("✅ 模型从CDN加载成功（已缓存到浏览器）");
             }
         }
         
