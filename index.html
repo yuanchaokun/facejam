@@ -1614,6 +1614,25 @@
                 drawWatermark(ctx, cssW, cssH);
             }
             
+            // 桌面端：当选中贴纸且没有选中任何mask时，显示提示
+            if (window.innerWidth >= 1024 && state.manualTool.content && state.selectedMaskIndex === -1 && state.masks.length === 0) {
+                ctx.save();
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // 半透明背景
+                const text = '💡 点击照片任意位置添加贴纸';
+                const textWidth = ctx.measureText(text).width;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(cssW / 2 - textWidth / 2 - 10, 20, textWidth + 20, 35);
+                
+                // 白色文字
+                ctx.fillStyle = '#fff';
+                ctx.fillText(text, cssW / 2, 37);
+                ctx.restore();
+            }
+            
             const toolbar = document.getElementById('floatingToolbar');
             const emoDisplay = document.getElementById('detectedEmotionDisplay');
             if (state.selectedMaskIndex !== -1) {
@@ -1628,6 +1647,12 @@
             state.manualTool = { type, content };
             document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
+            
+            // 桌面端：改变鼠标样式，提示可以点击添加
+            if (window.innerWidth >= 1024) {
+                canvas.style.cursor = 'crosshair';
+            }
+            
             if (state.selectedMaskIndex !== -1) {
                 state.masks[state.selectedMaskIndex].type = type;
                 state.masks[state.selectedMaskIndex].content = content;
