@@ -1,0 +1,7 @@
+name = "facejam"
+compatibility_date = "2025-11-22"
+
+# 静态资产目录部署
+[assets]
+directory = "."
+
