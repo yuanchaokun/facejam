@@ -584,8 +584,8 @@
         </div>
 
         <!-- 右侧：工具栏 -->
-        <div id="stickerSection" class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0 hidden lg:flex">
-            <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full border-r-4 border-black">
+        <div id="stickerSection" class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 max-h-full shrink-0 hidden lg:flex">
+            <div class="neo-card flex flex-col h-full max-h-full overflow-hidden bg-white w-full border-r-4 border-black">
                 <!-- 选项卡 -->
                 <div class="flex border-b-2 border-black bg-white shrink-0">
                     <button onclick="switchTab('faces')" class="tab-btn active flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-faces">表情</button>
@@ -1752,6 +1752,53 @@
         window.addEventListener('touchmove', handleMove, { passive: false });
         window.addEventListener('mouseup', () => { state.isDragging = false; state.isResizing = false; });
         window.addEventListener('touchend', () => { state.isDragging = false; state.isResizing = false; });
+        
+        // 右键复制贴纸
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            if (!state.img) return;
+            
+            const pos = getPos(e);
+            let clickedIndex = -1;
+            
+            // 检查是否点击了现有贴纸
+            for (let i = state.masks.length - 1; i >= 0; i--) {
+                const mask = state.masks[i];
+                if ((pos.x-mask.x)**2 + (pos.y-mask.y)**2 < (mask.size/1.8)**2) {
+                    clickedIndex = i;
+                    break;
+                }
+            }
+            
+            if (clickedIndex !== -1) {
+                // 复制这个贴纸
+                const original = state.masks[clickedIndex];
+                const newMask = {
+                    x: original.x + 20, // 稍微偏移一点
+                    y: original.y + 20,
+                    size: original.size,
+                    type: original.type,
+                    content: original.content
+                };
+                
+                // 如果是图片类型，确保已加载
+                if (newMask.type === 'image') {
+                    loadSticker(newMask.content).then(() => {
+                        state.masks.push(newMask);
+                        state.selectedMaskIndex = state.masks.length - 1;
+                        updateMaskCount();
+                        render();
+                        console.log('Sticker duplicated:', newMask);
+                    });
+                } else {
+                    state.masks.push(newMask);
+                    state.selectedMaskIndex = state.masks.length - 1;
+                    updateMaskCount();
+                    render();
+                    console.log('Sticker duplicated:', newMask);
+                }
+            }
+        });
 
         function updateSelectedSize(val) {
             if (state.selectedMaskIndex !== -1) {
