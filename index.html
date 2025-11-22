@@ -217,6 +217,17 @@
                 margin-left: auto;
                 margin-right: auto;
             }
+            
+            /* 强制隐藏底部水平按钮组 */
+            #rerollControlsDesktop {
+                display: none !important;
+            }
+            
+            /* 确保右侧竖直按钮始终可见 */
+            #rerollControls {
+                display: flex !important;
+                z-index: 80 !important; /* 提高到最上层 */
+            }
         }
 
         .toggle-checkbox:checked {
