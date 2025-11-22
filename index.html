@@ -2,12 +2,31 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FaceJam | 糊脸酱</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     
+    <!-- Tailwind CSS: 使用CDN（非常小，约3KB gzip，建议保持CDN以获取最新特性） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Face API JS: 优先使用CDN（保证稳定性） -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- 如果需要使用本地版本，取消下面的注释，注释掉上面的CDN版本 -->
+    <!-- <script src="./libs/face-api.min.js"></script> -->
+    
+    <!-- Google Fonts: 使用CDN（字体文件较大，建议使用CDN，有更好的缓存） -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX', {
+            'page_title': 'FaceJam 贴脸酱',
+            'page_location': window.location.href
+        });
+    </script>
 
     <script>
         tailwind.config = {
@@ -239,14 +258,191 @@
         .animate-fade-in-up {
             animation: fadeInUp 0.3s ease-out forwards;
         }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .modal-content {
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .step-number {
+            background: linear-gradient(135deg, #FFC900 0%, #FF90E8 100%);
+        }
     </style>
 </head>
 <body>
 
+    <!-- 激活码弹窗 -->
+    <div id="activationModal" class="hidden modal-overlay fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+        <div class="modal-content bg-white rounded-2xl border-3 border-black shadow-[6px_6px_0px_0px_#000] max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-black text-gray-800">免费去水印</h3>
+                <button onclick="closeActivationModal()" class="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- 获取激活码方式 -->
+                <div class="bg-gradient-to-r from-pink-100 to-purple-100 p-4 rounded-xl border-2 border-black">
+                    <p class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                        <span>💝</span>
+                        <span>获取激活码</span>
+                    </p>
+                    
+                    <!-- 方式1：添加微信 -->
+                    <div class="bg-white p-3 rounded-lg border-2 border-black mb-3">
+                        <p class="text-xs font-bold text-gray-700 mb-2">方式1️⃣：添加白豆微信</p>
+                        <div class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                            <span class="font-mono font-bold text-pink-600 text-sm">cupaobaidou</span>
+                            <button onclick="navigator.clipboard.writeText('cupaobaidou')" class="text-xs bg-black text-white px-2 py-1 rounded hover:bg-gray-800">复制</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 方式2：关注公众号 -->
+                    <div class="bg-white p-3 rounded-lg border-2 border-black">
+                        <p class="text-xs font-bold text-gray-700 mb-2">方式2️⃣：关注公众号「醋泡白豆」</p>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <p class="text-[10px] text-gray-500 mb-1">扫码关注后回复</p>
+                                <div class="bg-gray-50 px-2 py-1 rounded inline-block">
+                                    <span class="font-mono font-bold text-pink-600 text-xs">facejam.cc</span>
+                                </div>
+                            </div>
+                            <div class="w-24 h-24 bg-white border-2 border-gray-300 rounded-lg flex items-center justify-center shrink-0">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://mp.weixin.qq.com/mp/profile_ext?action=home%26__biz=MzI2OTIxMTg1Nw==" alt="公众号二维码" class="w-full h-full object-contain p-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 输入激活码 -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">输入激活码</label>
+                    <input 
+                        type="text" 
+                        id="activationCodeInput"
+                        placeholder="请输入激活码"
+                        class="w-full px-4 py-3 border-2 border-black rounded-xl text-center font-mono font-bold uppercase focus:outline-none focus:border-pink-500 transition-colors"
+                        onkeypress="if(event.key==='Enter') submitActivationCode()"
+                    />
+                    <div id="activationMessage" class="text-sm mt-2 text-center"></div>
+                </div>
+                
+                <button onclick="submitActivationCode()" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white font-black py-3 rounded-xl border-3 border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all">
+                    ✨ 激活
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 欢迎弹窗 -->
+    <div id="welcomeModal" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4 overflow-y-auto">
+        <div class="modal-content bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-50 rounded-2xl sm:rounded-3xl border-3 sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] max-w-lg w-full my-auto">
+            <!-- 头部 -->
+            <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 p-3 sm:p-5 rounded-t-xl sm:rounded-t-2xl border-b-3 sm:border-b-4 border-black relative">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <span class="text-2xl sm:text-4xl animate-bounce">🥰</span>
+                        <h2 class="text-lg sm:text-2xl font-black text-white drop-shadow-lg">嗨！我是贴脸酱</h2>
+                    </div>
+                    <button onclick="closeWelcomeModal()" class="w-8 h-8 sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 内容 -->
+            <div class="p-4 sm:p-6 space-y-3 sm:space-y-5">
+                <!-- 介绍 -->
+                <div class="text-center">
+                    <p class="text-sm sm:text-lg font-bold text-gray-800 leading-relaxed">发朋友圈不想露脸？马赛克太丑？</p>
+                    <p class="text-base sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mt-1">把照片交给我，AI 帮你一键"贴"好！</p>
+                </div>
+                
+                <!-- 步骤 -->
+                <div class="space-y-2 sm:space-y-3">
+                    <!-- 步骤1 -->
+                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
+                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
+                            1
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">上传照片</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">点击相机，支持拖拽。AI 会自动找到所有人脸。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤2 -->
+                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
+                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
+                            2
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">随机贴脸</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">不仅有 Emoji，还有猫猫狗狗。不喜欢？点"再贴一次"重随。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3 -->
+                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
+                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
+                            3
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">自定义 + 保存</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">上传你自己的表情包，甚至能自动去底！满意就保存。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 隐私提示 -->
+                <div class="bg-green-50 border-2 border-green-500 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
+                    <span class="text-xl sm:text-2xl shrink-0">🔒</span>
+                    <div class="min-w-0">
+                        <h4 class="text-xs sm:text-sm font-black text-green-700 mb-1">绝对隐私承诺：</h4>
+                        <p class="text-xs text-green-600 leading-relaxed">这是一个纯网页工具，所有计算都在你的设备上完成，照片绝不会上传到任何服务器，断网也能用！</p>
+                    </div>
+                </div>
+                
+                <!-- 开始按钮 -->
+                <button onclick="closeWelcomeModal()" class="w-full bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-pink-500 text-black font-black text-base sm:text-lg py-3 sm:py-4 rounded-xl sm:rounded-2xl border-3 sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] sm:hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2">
+                    <span>开始贴脸！</span>
+                    <span class="text-xl sm:text-2xl">🚀</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 顶部导航 -->
     <header class="bg-white border-b-4 border-black flex-none py-2 sm:py-3 z-30">
         <div class="w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3">
                 <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg border-2 border-black bg-[#FF90E8] flex items-center justify-center text-lg sm:text-xl shadow-hard-sm shrink-0">
                     🥰
                 </div>
@@ -263,8 +459,11 @@
             </div>
             
             <div class="flex gap-2">
+                <button onclick="toggleLanguage()" id="langBtn" class="neo-btn w-9 h-9 hidden sm:flex items-center justify-center bg-white text-sm font-bold" title="Switch Language">
+                    <span id="langIcon">EN</span>
+                </button>
                 <button onclick="downloadImage()" id="downloadBtn" class="neo-btn px-3 py-1.5 flex items-center gap-2 bg-[#23A6D5] text-white text-xs sm:text-sm hidden">
-                    <span>💾 保存</span>
+                    <span id="downloadBtnText">💾 保存</span>
                 </button>
                 <button onclick="triggerUpload()" id="uploadBtn" class="neo-btn px-3 py-1.5 flex items-center gap-2 bg-[#FFC900] text-xs sm:text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -297,6 +496,15 @@
                     </div>
                     <span class="text-lg sm:text-xl font-bold text-black">点击上传照片</span>
                     <span class="text-xs sm:text-sm font-medium text-gray-500 mt-2 bg-gray-100 px-3 py-1 rounded-full">AI 自动识别</span>
+                    <div class="mt-4 flex flex-col items-center gap-1.5 px-4 max-w-md">
+                        <div class="flex items-center gap-2 text-xs text-green-600 font-semibold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span>100%本地处理 · 照片不上传</span>
+                        </div>
+                        <p class="text-[10px] sm:text-xs text-gray-400 text-center leading-relaxed">
+                            所有图片仅在您的浏览器中处理，不会上传到任何服务器，绝对安全放心！
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Loading 遮罩 (强视觉反馈) -->
@@ -332,26 +540,28 @@
             </div>
             
             <!-- 重随按钮 - 移到照片外面（仅手机端） -->
-            <div id="rerollControls" class="hidden lg:hidden mt-3 flex-col items-center gap-2 animate-fade-in-up">
-                <div class="bg-black text-white text-[10px] px-2 py-1 rounded shadow-md">换一批👇</div>
+            <div id="rerollControls" class="hidden lg:hidden mt-2 mb-1 flex flex-col items-center gap-2 animate-fade-in-up">
+                <div class="bg-black text-white text-[10px] px-3 py-1 rounded-full shadow-md">再贴一次👇</div>
                 <div class="reroll-group">
-                    <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
-                    <div class="w-px h-5 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
-                    <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
-                    <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
-                    <div class="w-px h-5 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('custom')" class="neo-btn w-10 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
+                    <button onclick="rerollCategory('default')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
+                    <div class="w-px h-6 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
+                    <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300" title="Kay">🎨</button>
+                    <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
+                    <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
+                    <div class="w-px h-6 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
                 </div>
             </div>
             
             <!-- 重随按钮 - 桌面端保持在照片上 -->
             <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 lg:flex flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
-                <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">换一批👇</div>
+                <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">再贴一次👇</div>
                 <div class="reroll-group">
                     <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
                     <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
                     <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
+                    <button onclick="rerollCategory('kay')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300" title="Kay">🎨</button>
                     <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
                     <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
                     <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
@@ -362,24 +572,25 @@
 
         <!-- 右侧：工具栏 -->
         <div class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0">
-            <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full">
+            <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full border-r-4 border-black">
                 <!-- 选项卡 -->
                 <div class="flex border-b-2 border-black bg-white shrink-0">
                     <button onclick="switchTab('faces')" class="tab-btn active flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-faces">表情</button>
                     <button onclick="switchTab('animals')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-animals">动物</button>
+                    <button onclick="switchTab('kay')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-kay">Kay</button>
                     <button onclick="switchTab('others')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-others">其它</button>
                     <button onclick="switchTab('custom')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-custom">自定义</button>
                 </div>
 
                 <!-- 滚动区域 -->
                 <div class="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-4 bg-[#fafafa] min-h-0">
-                    <!-- Multi-select mode toggle -->
+                    <!-- Multi-select mode toggle - 只在表情、动物、其它标签显示 -->
                     <div id="multiSelectToggleRow" class="mb-3 sm:mb-4 bg-gradient-to-r from-purple-100 to-pink-100 p-3 rounded-xl border-2 border-black shadow-hard-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="text-xl">🎯</span>
                                 <div class="flex flex-col">
-                                    <span class="text-xs font-bold">多选模式</span>
+                                    <span class="text-xs font-bold">自选模式</span>
                                     <span class="text-[10px] text-gray-600 font-medium">选多个emoji批量贴脸</span>
                                 </div>
                             </div>
@@ -394,6 +605,31 @@
                     </div>
                     
                     <div id="emojiGrid" class="grid grid-cols-5 sm:grid-cols-6 gap-2 sm:gap-3 content-start pb-10"></div>
+                    
+                    <!-- Kay专区 -->
+                    <div id="kaySection" class="hidden space-y-3 sm:space-y-4 pb-10">
+                        <!-- Kay介绍卡片 -->
+                        <div class="bg-gradient-to-r from-pink-100 to-purple-100 border-2 border-black rounded-xl p-3 sm:p-4 shadow-hard-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full flex items-center justify-center text-2xl sm:text-3xl border-2 border-black shrink-0">
+                                    🎨
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-sm sm:text-base font-black text-gray-800 mb-1">插画师Kay的原创贴纸</h3>
+                                    <p class="text-xs text-gray-600 mb-2">可爱的团子和小动物，让你的照片更有趣！</p>
+                                    <a href="https://www.xiaohongshu.com/user/profile/53171ac1b4c4d6226fdcf19a" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-pink-600 hover:text-pink-700 bg-white px-2 py-1 rounded-full border border-pink-300 hover:border-pink-500 transition-all">
+                                        <span>✨</span>
+                                        <span>访问Kay的小红书主页</span>
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Kay的贴纸网格 -->
+                        <div id="kayStickers" class="grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-3"></div>
+                    </div>
+                    
                     <!-- 自定义区域 -->
                     <div id="customSection" class="hidden space-y-3 sm:space-y-4 pb-10">
                         <div class="flex items-center justify-between bg-white p-2 rounded-lg border-2 border-gray-200">
@@ -426,7 +662,12 @@
                 <!-- 底部状态栏 -->
                 <div class="p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold flex justify-between items-center shrink-0">
                     <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#00FF00]" id="aiStatusDot"></span> <span id="aiStatusText">AI 准备中...</span></span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="showActivationModal()" id="watermarkBtn" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-2 sm:px-3 py-1 rounded-full transition-all text-[10px] sm:text-xs font-bold">
+                            <span id="watermarkBtnText">🎨 免费去水印</span>
+                        </button>
                     <span id="maskCount" class="bg-white text-black px-2 py-0.5 rounded-full">0 遮挡</span>
+                    </div>
                 </div>
             </div>
             <input type="file" id="imageUpload" accept="image/*" class="hidden" onclick="this.value=null" onchange="handleImageUpload(event)" />
@@ -440,7 +681,13 @@
             faces: ['😎', '🥰', '😍', '😘', '🤪', '😆', '🤣', '😂', '😁', '😊', '😇', '🤩', '🥳', '🤗', '😋', '😛', '😝', '😜', '🤓', '🤠', '👻', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🤔', '🤫', '🤭', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '😪', '🤐', '🥴', '🤧', '😷', '🤒', '🤕', '🤑', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓'],
             animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐵', '🙈', '🙉', '🙊', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦉', '🐺', '🐗', '🦄', '🦍', '🦧', '🦛'],
             plants: ['🍄', '🎃', '💐', '🌷', '🌹', '🌺', '🌸', '🌼', '🌻', '🍀', '🍁', '🍃', '🪴', '🌰', '🌚', '🌝', '🌞', '🌟', '✨'],
-            others: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '💣', '💥', '💢', '💤', '💩', '🔥', '✨', '🌟', '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🎱', '🔮', '🧿', '🍩', '🍪', '🍔', '🍕', '🍙', '🍘', '🍣', '🎂', '🧁', '🥧']
+            others: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '💣', '💥', '💢', '💤', '💩', '🔥', '✨', '🌟', '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🎱', '🔮', '🧿', '🍩', '🍪', '🍔', '🍕', '🍙', '🍘', '🍣', '🎂', '🧁', '🥧'],
+            kay: [
+                {name: 'kay_happy.png', title: '开心团子'},
+                {name: 'kay_smug.png', title: '傲娇团子'},
+                {name: 'kay_sweat.png', title: '流汗鸭'},
+                {name: 'kay_elephant.png', title: '大象'}
+            ]
         };
         const AI_EMOTION_MAP = {
             neutral: ['😎', '😐', '😶', '😶‍🌫️', '🐸', '🤖', '🌝', '🌚', '🗿', '🐱', '🐼', '🤔'],
@@ -471,28 +718,183 @@
             scanTimeout: null,
             dpr: window.devicePixelRatio || 1,
             multiSelectMode: false,
-            selectedEmojis: []
+            selectedEmojis: [],
+            language: 'zh', // 'zh' or 'en'
+            watermarkRemoved: false // 是否已去除水印
+        };
+        
+        // 激活码系统
+        const ACTIVATION_CODES = {
+            // 万能代码（无限次使用）
+            'cupaobaidou': { uses: Infinity, used: 0 },
+            'baidou.work': { uses: Infinity, used: 0 },
+            'kaykay': { uses: Infinity, used: 0 },
+            // 100个普通代码（每个2次）
+            'FJ8K2M': { uses: 2, used: 0 }, 'P3N7XQ': { uses: 2, used: 0 }, 'R9W4TS': { uses: 2, used: 0 },
+            'H5V6JL': { uses: 2, used: 0 }, 'Y2B8CK': { uses: 2, used: 0 }, 'M7D3FG': { uses: 2, used: 0 },
+            'Q4X9NH': { uses: 2, used: 0 }, 'Z6T2PW': { uses: 2, used: 0 }, 'L8K5RY': { uses: 2, used: 0 },
+            'A3S7VM': { uses: 2, used: 0 }, 'E9C4BN': { uses: 2, used: 0 }, 'G2F6HX': { uses: 2, used: 0 },
+            'J5W8DQ': { uses: 2, used: 0 }, 'U7P3LK': { uses: 2, used: 0 }, 'N4R9TM': { uses: 2, used: 0 },
+            'V8X2SY': { uses: 2, used: 0 }, 'B6M5CW': { uses: 2, used: 0 }, 'K3Q7FH': { uses: 2, used: 0 },
+            'T9L4NP': { uses: 2, used: 0 }, 'W2D8RX': { uses: 2, used: 0 }, 'C7V5JK': { uses: 2, used: 0 },
+            'F4H9BM': { uses: 2, used: 0 }, 'S6P2QN': { uses: 2, used: 0 }, 'X8T3LW': { uses: 2, used: 0 },
+            'D5K7RY': { uses: 2, used: 0 }, 'G9M4VH': { uses: 2, used: 0 }, 'L2W6CX': { uses: 2, used: 0 },
+            'Q7N3FS': { uses: 2, used: 0 }, 'R4B8JP': { uses: 2, used: 0 }, 'Y6H2TK': { uses: 2, used: 0 },
+            'M9X5DW': { uses: 2, used: 0 }, 'P3L7NQ': { uses: 2, used: 0 }, 'V8C4RM': { uses: 2, used: 0 },
+            'H2F9KY': { uses: 2, used: 0 }, 'K6S3BX': { uses: 2, used: 0 }, 'T4W7LH': { uses: 2, used: 0 },
+            'N9P2VJ': { uses: 2, used: 0 }, 'J5R8MQ': { uses: 2, used: 0 }, 'B7D3CW': { uses: 2, used: 0 },
+            'F2X6NK': { uses: 2, used: 0 }, 'W9H4TS': { uses: 2, used: 0 }, 'L5Q8PY': { uses: 2, used: 0 },
+            'C3K7RX': { uses: 2, used: 0 }, 'G6N2VM': { uses: 2, used: 0 }, 'S8B4FH': { uses: 2, used: 0 },
+            'X4M9LW': { uses: 2, used: 0 }, 'D7T2QJ': { uses: 2, used: 0 }, 'R3V6KP': { uses: 2, used: 0 },
+            'Y9C5HN': { uses: 2, used: 0 }, 'P2W8BX': { uses: 2, used: 0 }, 'K6F3RM': { uses: 2, used: 0 },
+            'M4L7SY': { uses: 2, used: 0 }, 'H8J2TQ': { uses: 2, used: 0 }, 'N5X9VW': { uses: 2, used: 0 },
+            'Q7B3CK': { uses: 2, used: 0 }, 'T2P6DH': { uses: 2, used: 0 }, 'V9R4NL': { uses: 2, used: 0 },
+            'J6K8FM': { uses: 2, used: 0 }, 'W3S5XY': { uses: 2, used: 0 }, 'L7C2BP': { uses: 2, used: 0 },
+            'F4H9QW': { uses: 2, used: 0 }, 'B8N3TK': { uses: 2, used: 0 }, 'G2M7RJ': { uses: 2, used: 0 },
+            'X6V4LH': { uses: 2, used: 0 }, 'D9P5CY': { uses: 2, used: 0 }, 'R3W8NX': { uses: 2, used: 0 },
+            'K7F2VM': { uses: 2, used: 0 }, 'S4Q9BH': { uses: 2, used: 0 }, 'Y6T3JW': { uses: 2, used: 0 },
+            'M2L8KP': { uses: 2, used: 0 }, 'H9X5DN': { uses: 2, used: 0 }, 'N4C7RQ': { uses: 2, used: 0 },
+            'P8B2VY': { uses: 2, used: 0 }, 'T5W9FX': { uses: 2, used: 0 }, 'J3K6LM': { uses: 2, used: 0 },
+            'V7S4NH': { uses: 2, used: 0 }, 'W2R8QK': { uses: 2, used: 0 }, 'C6M3BJ': { uses: 2, used: 0 },
+            'F9P5TY': { uses: 2, used: 0 }, 'L4H7XW': { uses: 2, used: 0 }, 'G8N2VC': { uses: 2, used: 0 },
+            'Q3D6RM': { uses: 2, used: 0 }, 'X7K9FP': { uses: 2, used: 0 }, 'B5T2LH': { uses: 2, used: 0 },
+            'R9V4WN': { uses: 2, used: 0 }, 'Y3S8JQ': { uses: 2, used: 0 }, 'M6C2KX': { uses: 2, used: 0 },
+            'K4P7BY': { uses: 2, used: 0 }, 'H8F3NW': { uses: 2, used: 0 }, 'N2X9TM': { uses: 2, used: 0 },
+            'T6L5RH': { uses: 2, used: 0 }, 'J9W4VK': { uses: 2, used: 0 }, 'V3B7CQ': { uses: 2, used: 0 },
+            'D8S2PX': { uses: 2, used: 0 }, 'W5M9FL': { uses: 2, used: 0 }, 'C4R6NY': { uses: 2, used: 0 },
+            'F7H3JW': { uses: 2, used: 0 }, 'L9K2TQ': { uses: 2, used: 0 }, 'G5X8BM': { uses: 2, used: 0 },
+            'P2V6RH': { uses: 2, used: 0 }, 'Q8N4CK': { uses: 2, used: 0 }, 'X3W7LS': { uses: 2, used: 0 }
+        };
+        
+        // 语言包
+        const i18n = {
+            zh: {
+                title: '贴脸酱',
+                localOnly: '纯本地运行',
+                download: '💾 保存',
+                upload: '上传',
+                changePhoto: '换张',
+                tabFaces: '表情',
+                tabAnimals: '动物',
+                tabKay: 'Kay',
+                tabOthers: '其它',
+                tabCustom: '自定义',
+                aiReady: 'AI 就绪',
+                aiPreparing: 'AI 准备中...',
+                aiOffline: 'AI 离线',
+                maskCount: '遮挡',
+                placeholderTitle: '点击上传照片',
+                placeholderSubtitle: 'AI 自动识别',
+                privacyTitle: '100%本地处理 · 照片不上传',
+                privacyDesc: '所有图片仅在您的浏览器中处理，不会上传到任何服务器，绝对安全放心！',
+                loadingScanning: '正在扫描...',
+                loadingApplying: '正在贴上...',
+                loadingSubtitle: '加载 AI 模型中...',
+                rerollLabel: '再贴一次👇',
+                sizeLabel: '大小',
+                multiSelectTitle: '自选模式',
+                multiSelectDesc: '选多个emoji批量贴脸',
+                multiSelectApply: '✨ 一键贴上',
+                bgRemoveTitle: '自动智能去底',
+                bgRemoveDesc: '仅限纯色(白/黑)背景',
+                uploadLocal: '上传本地图',
+                pasteLink: '贴链接',
+                // 欢迎弹窗
+                welcomeTitle: '嗨！我是贴脸酱',
+                welcomeIntro1: '发朋友圈不想露脸？马赛克太丑？',
+                welcomeIntro2: '把照片交给我，AI 帮你一键"贴"好！',
+                welcomeStep1Title: '上传照片',
+                welcomeStep1Desc: '点击相机，支持拖拽。AI 会自动找到所有人脸。',
+                welcomeStep2Title: '随机贴脸',
+                welcomeStep2Desc: '不仅有 Emoji，还有猫猫狗狗。不喜欢？点"再贴一次"重随。',
+                welcomeStep3Title: '自定义 + 保存',
+                welcomeStep3Desc: '上传你自己的表情包，甚至能自动去底！满意就保存。',
+                welcomePrivacyTitle: '绝对隐私承诺：',
+                welcomePrivacyDesc: '这是一个纯网页工具，所有计算都在你的设备上完成，照片绝不会上传到任何服务器，断网也能用！',
+                welcomeStartBtn: '开始贴脸！'
+            },
+            en: {
+                title: 'FaceJam',
+                localOnly: 'Local Only',
+                download: '💾 Save',
+                upload: 'Upload',
+                changePhoto: 'Change',
+                tabFaces: 'Faces',
+                tabAnimals: 'Animals',
+                tabKay: 'Kay',
+                tabOthers: 'Others',
+                tabCustom: 'Custom',
+                aiReady: 'AI Ready',
+                aiPreparing: 'AI Loading...',
+                aiOffline: 'AI Offline',
+                maskCount: 'Masks',
+                placeholderTitle: 'Click to Upload Photo',
+                placeholderSubtitle: 'AI Auto Detect',
+                privacyTitle: '100% Local · No Upload',
+                privacyDesc: 'All images processed in your browser only. Nothing uploaded. Safe & Secure!',
+                loadingScanning: 'Scanning...',
+                loadingApplying: 'Applying...',
+                loadingSubtitle: 'Loading AI Models...',
+                rerollLabel: 'Try Again👇',
+                sizeLabel: 'Size',
+                multiSelectTitle: 'Multi-Select',
+                multiSelectDesc: 'Select multiple emojis',
+                multiSelectApply: '✨ Apply All',
+                bgRemoveTitle: 'Auto Remove BG',
+                bgRemoveDesc: 'For solid backgrounds only',
+                uploadLocal: 'Upload Image',
+                pasteLink: 'Paste URL',
+                // Welcome modal
+                welcomeTitle: 'Hi! I\'m FaceJam',
+                welcomeIntro1: 'Want privacy in photos? Mosaic too ugly?',
+                welcomeIntro2: 'Let AI help you cover faces with fun stickers!',
+                welcomeStep1Title: 'Upload Photo',
+                welcomeStep1Desc: 'Click camera or drag & drop. AI finds all faces automatically.',
+                welcomeStep2Title: 'Random Stickers',
+                welcomeStep2Desc: 'Emojis, cats, dogs & more. Don\'t like it? Try again!',
+                welcomeStep3Title: 'Customize & Save',
+                welcomeStep3Desc: 'Upload your own stickers, auto remove background! Save when satisfied.',
+                welcomePrivacyTitle: 'Privacy Promise:',
+                welcomePrivacyDesc: 'Pure web tool. All processing happens on your device. Nothing uploaded. Works offline!',
+                welcomeStartBtn: 'Start Now!'
+            }
         };
 
         const canvas = document.getElementById('editorCanvas');
         const ctx = canvas.getContext('2d');
-        const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+        
+        // 模型URL配置：支持本地和CDN双模式
+        // 部署到CloudFlare或七牛云时，可以修改这个URL指向你的CDN地址
+        const MODEL_URL_CDN = 'YOUR_CDN_URL/models'; // 替换成你的CDN地址
+        const MODEL_URL_GITHUB = 'https://justadudewhohacks.github.io/face-api.js/models';
+        const MODEL_URL_LOCAL = './models'; // 本地模型路径
+        
+        // 优先使用本地，如果本地加载失败则使用GitHub CDN
+        let MODEL_URL = MODEL_URL_LOCAL;
+
+        // ======================================
+        // Google Analytics 事件追踪
+        // ======================================
+        function trackEvent(eventName, eventParams = {}) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', eventName, eventParams);
+            }
+        }
 
         // 核心初始化
         async function init() {
             renderEmojiGrid('faces');
+            loadCustomStickersFromStorage(); // 加载自定义贴纸
             try {
-                await Promise.all([
-                    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-                    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
-                ]);
+                // 尝试加载模型
+                await loadModels();
                 state.isModelLoaded = true;
-                console.log("Models loaded");
+                console.log("Models loaded from:", MODEL_URL);
                 document.getElementById('aiStatusDot').classList.add('bg-[#00FF00]');
-                document.getElementById('aiStatusText').innerText = "AI 就绪";
+                document.getElementById('aiStatusText').innerText = i18n[state.language].aiReady;
             } catch (e) {
-                console.error(e);
-                document.getElementById('aiStatusText').innerText = "AI 离线";
+                console.error("Failed to load models:", e);
+                document.getElementById('aiStatusText').innerText = i18n[state.language].aiOffline;
                 document.getElementById('aiStatusDot').classList.add('bg-red-500');
             }
             window.addEventListener('keydown', handleKeyDown);
@@ -502,11 +904,38 @@
                 state.multiSelectMode = e.target.checked;
                 state.selectedEmojis = [];
                 updateMultiSelectUI();
-                renderEmojiGrid(state.activeTab);
+                
+                // 重新渲染当前标签页
+                if (state.activeTab === 'kay') {
+                    renderKayStickers();
+                } else {
+                    renderEmojiGrid(state.activeTab);
+                }
             });
             
             setTimeout(resizeCanvas, 500);
         }
+        
+        // 加载模型函数，支持降级
+        async function loadModels() {
+            try {
+                // 首先尝试本地模型
+                console.log("Trying to load models from:", MODEL_URL);
+                await Promise.all([
+                    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+                ]);
+            } catch (e) {
+                console.warn("Local models failed, falling back to GitHub CDN:", e);
+                // 如果本地失败，使用GitHub CDN
+                MODEL_URL = MODEL_URL_GITHUB;
+                await Promise.all([
+                    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+                ]);
+            }
+        }
+        
         window.onload = init;
 
         // UI逻辑
@@ -516,13 +945,63 @@
             document.getElementById(`tab-${tabName}`).classList.add('active');
             const grid = document.getElementById('emojiGrid');
             const customSection = document.getElementById('customSection');
-            if (tabName === 'custom') {
+            const kaySection = document.getElementById('kaySection');
+            const multiSelectRow = document.getElementById('multiSelectToggleRow');
+            
+            // 追踪标签切换
+            trackEvent('switch_tab', {
+                'event_category': 'User Interaction',
+                'event_label': tabName
+            });
+            
+            // 隐藏所有区域
                 grid.innerHTML = ''; 
-                customSection.classList.remove('hidden');
+            customSection.classList.add('hidden');
+            kaySection.classList.add('hidden');
+            
+            // 在表情、动物、其它、Kay标签显示多选模式
+            if (tabName === 'faces' || tabName === 'animals' || tabName === 'others' || tabName === 'kay') {
+                multiSelectRow.classList.remove('hidden');
             } else {
-                customSection.classList.add('hidden');
+                multiSelectRow.classList.add('hidden');
+                // 关闭多选模式
+                if (state.multiSelectMode) {
+                    document.getElementById('multiSelectToggle').checked = false;
+                    state.multiSelectMode = false;
+                    state.selectedEmojis = [];
+                    updateMultiSelectUI();
+                }
+            }
+            
+            if (tabName === 'custom') {
+                customSection.classList.remove('hidden');
+                renderCustomStickers(); // 渲染已保存的自定义贴纸
+            } else if (tabName === 'kay') {
+                kaySection.classList.remove('hidden');
+                renderKayStickers();
+            } else {
                 renderEmojiGrid(tabName);
             }
+        }
+        
+        // 渲染自定义贴纸
+        function renderCustomStickers() {
+            const container = document.getElementById('customStickerContainer');
+            container.innerHTML = '';
+            state.customStickers.forEach(url => {
+                const btn = document.createElement('button');
+                btn.className = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1 relative group';
+                btn.innerHTML = `
+                    <img src="${url}" class="custom-sticker-img">
+                    <button onclick="deleteCustomSticker(event, '${url.replace(/'/g, "\\'")}', this.parentElement)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex z-10" title="删除">×</button>
+                `;
+                btn.onclick = function(e) { 
+                    if (e.target.tagName !== 'BUTTON') {
+                        setManualSticker('image', url, this); 
+                    }
+                };
+                container.appendChild(btn);
+            });
         }
 
         function renderEmojiGrid(category) {
@@ -553,7 +1032,7 @@
                 if (state.multiSelectMode) {
                     btn.onclick = () => toggleEmojiSelection(emoji, btn);
                 } else {
-                    btn.onclick = () => setManualSticker('emoji', emoji, btn);
+                btn.onclick = () => setManualSticker('emoji', emoji, btn);
                 }
                 fragment.appendChild(btn);
             });
@@ -582,7 +1061,7 @@
                     document.getElementById('downloadBtn').classList.remove('hidden');
                     document.getElementById('rerollControls').classList.add('hidden'); 
                     document.getElementById('rerollControlsDesktop').classList.add('hidden');
-                    document.getElementById('uploadBtnText').innerText = "换张";
+                    document.getElementById('uploadBtnText').innerText = i18n[state.language].changePhoto;
                     
                     showLoading(true, true);
                     await detectFacesAndEmotions();
@@ -590,6 +1069,12 @@
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
+            
+            // 追踪图片上传事件
+            trackEvent('upload_image', {
+                'event_category': 'User Interaction',
+                'event_label': 'Image Upload'
+            });
         }
 
         function handleCustomFileUpload(e) {
@@ -643,12 +1128,93 @@
         function addCustomStickerToLibrary(url) {
             if (state.customStickers.includes(url)) return;
             state.customStickers.push(url);
+            saveCustomStickersToStorage(); // 保存到本地
+            
             const container = document.getElementById('customStickerContainer');
             const btn = document.createElement('button');
-            btn.className = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1';
-            btn.innerHTML = `<img src="${url}" class="custom-sticker-img">`;
-            btn.onclick = function() { setManualSticker('image', url, this); };
+            btn.className = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1 relative group';
+            btn.innerHTML = `
+                <img src="${url}" class="custom-sticker-img">
+                <button onclick="deleteCustomSticker(event, '${url.replace(/'/g, "\\'")}', this.parentElement)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex z-10" title="删除">×</button>
+            `;
+            btn.onclick = function(e) { 
+                if (e.target.tagName !== 'BUTTON') {
+                    setManualSticker('image', url, this); 
+                }
+            };
             container.insertBefore(btn, container.firstChild);
+        }
+        
+        // 删除自定义贴纸
+        function deleteCustomSticker(event, url, btnElement) {
+            event.stopPropagation();
+            if (confirm('确定要删除这个贴纸吗？')) {
+                const index = state.customStickers.indexOf(url);
+                if (index > -1) {
+                    state.customStickers.splice(index, 1);
+                    saveCustomStickersToStorage();
+                }
+                btnElement.remove();
+            }
+        }
+        
+        // 保存自定义贴纸到本地存储
+        function saveCustomStickersToStorage() {
+            try {
+                localStorage.setItem('facejam_custom_stickers', JSON.stringify(state.customStickers));
+            } catch (e) {
+                console.error('Failed to save custom stickers:', e);
+            }
+        }
+        
+        // 从本地存储加载自定义贴纸
+        function loadCustomStickersFromStorage() {
+            try {
+                const saved = localStorage.getItem('facejam_custom_stickers');
+                if (saved) {
+                    const stickers = JSON.parse(saved);
+                    stickers.forEach(url => {
+                        if (!state.customStickers.includes(url)) {
+                            state.customStickers.push(url);
+                            // 不立即渲染，等切换到自定义标签时再渲染
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load custom stickers:', e);
+            }
+        }
+        
+        // 渲染Kay的贴纸
+        function renderKayStickers() {
+            const container = document.getElementById('kayStickers');
+            container.innerHTML = '';
+            
+            EMOJI_DB.kay.forEach(sticker => {
+                const btn = document.createElement('button');
+                const url = `./assets/${sticker.name}`;
+                const isMultiSelected = state.selectedEmojis.includes(url);
+                
+                let classes = 'aspect-square rounded-xl border-2 border-black hover:border-pink-500 bg-white hover:bg-pink-50 transition-all overflow-hidden p-2 sticker-btn shadow-hard-sm hover:shadow-hard';
+                if (state.multiSelectMode && isMultiSelected) {
+                    classes = 'aspect-square rounded-xl border-3 border-black bg-gradient-to-br from-purple-100 to-pink-100 transition-all overflow-hidden p-2 sticker-btn shadow-hard relative multi-selected';
+                }
+                
+                btn.className = classes;
+                btn.innerHTML = `
+                    <img src="${url}" class="w-full h-full object-contain" alt="${sticker.title}">
+                    <div class="text-[10px] font-bold text-gray-600 mt-1 text-center truncate">${sticker.title}</div>
+                `;
+                
+                if (state.multiSelectMode) {
+                    btn.onclick = () => toggleEmojiSelection(url, btn);
+                } else {
+                    btn.onclick = () => setManualSticker('image', url, btn);
+                }
+                
+                btn.title = sticker.title;
+                container.appendChild(btn);
+            });
         }
 
         function resizeCanvas() {
@@ -696,7 +1262,7 @@
             
             try {
                 progressBar.style.width = '20%';
-                loadingText.innerText = "扫描中...";
+                loadingText.innerText = i18n[state.language].loadingScanning;
                 const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.25 });
                 await new Promise(r => setTimeout(r, 500));
                 
@@ -712,6 +1278,13 @@
                      document.getElementById('rerollControls').classList.add('flex');
                      document.getElementById('rerollControlsDesktop').classList.remove('hidden');
                      document.getElementById('rerollControlsDesktop').classList.add('flex');
+                     
+                     // 追踪人脸检测成功
+                     trackEvent('face_detected', {
+                         'event_category': 'AI Processing',
+                         'event_label': 'Face Detection Success',
+                         'value': results.length
+                     });
                 }
                 updateMaskCount();
                 progressBar.style.width = '100%';
@@ -731,9 +1304,16 @@
             
             let sessionPool = [];
             if (category !== 'default') {
-                let pool = category === 'custom' ? state.customStickers : 
-                           category === 'chaos' ? [...EMOJI_DB.animals, ...EMOJI_DB.plants, ...EMOJI_DB.others] :
-                           EMOJI_DB[category];
+                let pool;
+                if (category === 'custom') {
+                    pool = state.customStickers;
+                } else if (category === 'kay') {
+                    pool = EMOJI_DB.kay.map(s => `./assets/${s.name}`);
+                } else if (category === 'chaos') {
+                    pool = [...EMOJI_DB.animals, ...EMOJI_DB.plants, ...EMOJI_DB.others];
+                } else {
+                    pool = EMOJI_DB[category];
+                }
                 if (!pool || pool.length === 0) { alert("没有可用贴纸"); return; }
                 sessionPool = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
             }
@@ -748,7 +1328,7 @@
                     randomEmoji = list[Math.floor(Math.random() * list.length)];
                 } else {
                     randomEmoji = sessionPool[Math.floor(Math.random() * sessionPool.length)];
-                    if (category === 'custom') type = 'image';
+                    if (category === 'custom' || category === 'kay') type = 'image';
                 }
 
                 const s = state.scale;
@@ -770,7 +1350,7 @@
                 alert("请先上传自定义图片"); switchTab('custom'); return;
             }
             showLoading(true, false);
-            document.getElementById('loadingTitle').innerText = "重新生成...";
+            document.getElementById('loadingTitle').innerText = i18n[state.language].loadingApplying;
             await new Promise(r => setTimeout(r, 800));
             generateMasksFromDetections(category);
             showLoading(false);
@@ -813,6 +1393,11 @@
                 }
                 ctx.restore();
             });
+            
+            // 绘制水印（如果未移除）
+            if (!state.watermarkRemoved && state.img) {
+                drawWatermark(ctx, cssW, cssH);
+            }
             
             const toolbar = document.getElementById('floatingToolbar');
             const emoDisplay = document.getElementById('detectedEmotionDisplay');
@@ -916,14 +1501,21 @@
                 e.preventDefault(); deleteSelected();
             }
         }
-        function updateMaskCount() { document.getElementById('maskCount').innerText = `${state.masks.length} 遮挡`; }
+        function updateMaskCount() { document.getElementById('maskCount').innerText = `${state.masks.length} ${i18n[state.language].maskCount}`; }
         
         function loadSticker(url) {
             return new Promise(resolve => {
                 if (state.loadedStickerImages[url]) return resolve(state.loadedStickerImages[url]);
                 const img = new Image();
+                // 只对外部URL设置crossOrigin
+                if (url.startsWith('http://') || url.startsWith('https://')) {
                 img.crossOrigin = "anonymous";
+                }
                 img.onload = () => { state.loadedStickerImages[url] = img; resolve(img); };
+                img.onerror = () => { 
+                    console.error('Failed to load image:', url); 
+                    resolve(null); 
+                };
                 img.src = url;
             });
         }
@@ -955,7 +1547,7 @@
         
         function applyMultiSelectEmojis() {
             if (state.selectedEmojis.length === 0) {
-                alert('请先选择emoji');
+                alert('请先选择emoji或贴纸');
                 return;
             }
             if (state.rawDetections.length === 0) {
@@ -963,27 +1555,51 @@
                 return;
             }
             
-            // Apply selected emojis to all detected faces
-            state.masks = [];
-            state.selectedMaskIndex = -1;
+            // 显示激光扫描特效
+            showLoading(true, false);
+            document.getElementById('loadingTitle').innerText = i18n[state.language].loadingApplying;
+            document.getElementById('loadingProgress').style.width = '30%';
             
-            state.rawDetections.forEach((result, index) => {
-                const box = result.detection.box;
-                const emoji = state.selectedEmojis[index % state.selectedEmojis.length];
-                const s = state.scale;
+            setTimeout(() => {
+                document.getElementById('loadingProgress').style.width = '70%';
                 
-                state.masks.push({
-                    x: (box.x * s) + (box.width * s / 2),
-                    y: (box.y * s) + (box.height * s / 2),
-                    size: Math.max(box.width * s, box.height * s) * 1.4,
-                    type: 'emoji',
-                    content: emoji,
-                    detectedEmotion: null
+                // Apply selected emojis to all detected faces
+                state.masks = [];
+                state.selectedMaskIndex = -1;
+                
+                state.rawDetections.forEach((result, index) => {
+                    const box = result.detection.box;
+                    const content = state.selectedEmojis[index % state.selectedEmojis.length];
+                    const s = state.scale;
+                    
+                    // 判断是emoji还是图片URL
+                    const isImage = content.includes('./assets/') || content.includes('http');
+                    
+                    state.masks.push({
+                        x: (box.x * s) + (box.width * s / 2),
+                        y: (box.y * s) + (box.height * s / 2),
+                        size: Math.max(box.width * s, box.height * s) * 1.4,
+                        type: isImage ? 'image' : 'emoji',
+                        content: content,
+                        detectedEmotion: null
+                    });
                 });
-            });
-            
-            updateMaskCount();
-            render();
+                
+                document.getElementById('loadingProgress').style.width = '100%';
+                updateMaskCount();
+                
+                setTimeout(() => {
+                    showLoading(false);
+                    render();
+                }, 300);
+                
+                // 追踪多选应用
+                trackEvent('apply_multi_select', {
+                    'event_category': 'Feature Usage',
+                    'event_label': 'Multi Select',
+                    'value': state.selectedEmojis.length
+                });
+            }, 600);
         }
 
         function showLoading(show, isSlow) {
@@ -998,12 +1614,233 @@
             }
         }
         
+        // 绘制水印
+        function drawWatermark(ctx, width, height) {
+            ctx.save();
+            
+            // 半透明白色背景
+            const padding = 8;
+            const cornerRadius = 12;
+            const fontSize = Math.min(width, height) * 0.035; // 响应式字体大小
+            const x = 15;
+            const y = height - 15;
+            
+            // 设置字体
+            ctx.font = `bold ${fontSize}px "Fredoka", sans-serif`;
+            const text = '🥰 FaceJam.cc';
+            const textWidth = ctx.measureText(text).width;
+            const bgWidth = textWidth + padding * 2;
+            const bgHeight = fontSize + padding * 2;
+            
+            // 绘制圆角矩形背景
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.beginPath();
+            ctx.moveTo(x + cornerRadius, y - bgHeight);
+            ctx.lineTo(x + bgWidth - cornerRadius, y - bgHeight);
+            ctx.quadraticCurveTo(x + bgWidth, y - bgHeight, x + bgWidth, y - bgHeight + cornerRadius);
+            ctx.lineTo(x + bgWidth, y - cornerRadius);
+            ctx.quadraticCurveTo(x + bgWidth, y, x + bgWidth - cornerRadius, y);
+            ctx.lineTo(x + cornerRadius, y);
+            ctx.quadraticCurveTo(x, y, x, y - cornerRadius);
+            ctx.lineTo(x, y - bgHeight + cornerRadius);
+            ctx.quadraticCurveTo(x, y - bgHeight, x + cornerRadius, y - bgHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制边框
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制文字
+            ctx.fillStyle = '#FF90E8';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, x + padding, y - bgHeight / 2);
+            
+            ctx.restore();
+        }
+        
+        // 激活码验证
+        function validateActivationCode(code) {
+            code = code.trim();
+            if (!code) return { success: false, message: '请输入激活码' };
+            
+            // 检查是否已使用过此代码
+            const usedCodes = JSON.parse(localStorage.getItem('facejam_used_codes') || '{}');
+            
+            if (ACTIVATION_CODES[code]) {
+                const codeInfo = ACTIVATION_CODES[code];
+                const usedCount = usedCodes[code] || 0;
+                
+                if (codeInfo.uses === Infinity) {
+                    // 万能代码（不透露是万能码）
+                    return { success: true, message: '激活成功！此代码可在2台设备使用' };
+                } else if (usedCount < codeInfo.uses) {
+                    // 普通代码还有剩余次数
+                    usedCodes[code] = usedCount + 1;
+                    localStorage.setItem('facejam_used_codes', JSON.stringify(usedCodes));
+                    const remaining = codeInfo.uses - usedCodes[code];
+                    return { 
+                        success: true, 
+                        message: `激活成功！此代码可在2台设备使用${remaining > 0 ? '，还剩 ' + remaining + ' 次' : ''}`,
+                        remaining: remaining
+                    };
+                } else {
+                    return { success: false, message: '此激活码已达使用次数上限' };
+                }
+            }
+            
+            return { success: false, message: '激活码无效，请检查后重试' };
+        }
+        
+        // 显示激活码弹窗
+        function showActivationModal() {
+            const modal = document.getElementById('activationModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('activationCodeInput').value = '';
+            document.getElementById('activationCodeInput').focus();
+        }
+        
+        // 关闭激活码弹窗
+        function closeActivationModal() {
+            const modal = document.getElementById('activationModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        // 提交激活码
+        function submitActivationCode() {
+            const code = document.getElementById('activationCodeInput').value;
+            const result = validateActivationCode(code);
+            const messageEl = document.getElementById('activationMessage');
+            
+            if (result.success) {
+                messageEl.className = 'text-sm font-bold text-green-600 mt-2';
+                messageEl.textContent = result.message;
+                state.watermarkRemoved = true;
+                localStorage.setItem('facejam_watermark_removed', 'true');
+                
+                // 更新按钮状态
+                const btn = document.getElementById('watermarkBtn');
+                const btnText = document.getElementById('watermarkBtnText');
+                if (btn && btnText) {
+                    btn.className = 'bg-green-600 hover:bg-green-700 text-white px-2 sm:px-3 py-1 rounded-full transition-all text-[10px] sm:text-xs font-bold';
+                    btnText.textContent = '✓ 已激活';
+                }
+                
+                render();
+                setTimeout(() => {
+                    closeActivationModal();
+                }, 1500);
+                
+                // 追踪激活成功事件
+                trackEvent('activation_success', {
+                    'event_category': 'Monetization',
+                    'event_label': 'Watermark Removal'
+                });
+            } else {
+                messageEl.className = 'text-sm font-bold text-red-600 mt-2';
+                messageEl.textContent = result.message;
+            }
+        }
+        
         function downloadImage() {
             if (!state.img) return;
             const link = document.createElement('a');
             link.download = 'facejam_' + Date.now() + '.png';
             link.href = canvas.toDataURL();
             link.click();
+            
+            // 追踪下载事件
+            trackEvent('download_image', {
+                'event_category': 'User Interaction',
+                'event_label': 'Image Download',
+                'activated': state.isActivated ? 'Yes' : 'No'
+            });
+        }
+        
+        // 欢迎弹窗控制
+        function closeWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            modal.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                localStorage.setItem('facejam_welcomed', 'true');
+            }, 300);
+        }
+        
+        // 检查是否已经看过欢迎弹窗
+        window.addEventListener('load', () => {
+            const hasSeenWelcome = localStorage.getItem('facejam_welcomed');
+            if (hasSeenWelcome) {
+                document.getElementById('welcomeModal').style.display = 'none';
+            }
+            
+            // 加载保存的语言设置
+            const savedLang = localStorage.getItem('facejam_language');
+            if (savedLang && savedLang !== state.language) {
+                state.language = savedLang;
+                updateLanguage();
+            }
+            
+            // 检查水印激活状态
+            const watermarkRemoved = localStorage.getItem('facejam_watermark_removed');
+            if (watermarkRemoved === 'true') {
+                state.watermarkRemoved = true;
+                const btn = document.getElementById('watermarkBtn');
+                const btnText = document.getElementById('watermarkBtnText');
+                if (btn && btnText) {
+                    btn.className = 'bg-green-600 hover:bg-green-700 text-white px-2 sm:px-3 py-1 rounded-full transition-all text-[10px] sm:text-xs font-bold';
+                    btnText.textContent = '✓ 已激活';
+                }
+            }
+        });
+        
+        // 切换语言
+        function toggleLanguage() {
+            state.language = state.language === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('facejam_language', state.language);
+            updateLanguage();
+        }
+        
+        // 更新界面语言
+        function updateLanguage() {
+            const t = i18n[state.language];
+            
+            // 更新按钮文字
+            document.getElementById('langIcon').innerText = state.language === 'zh' ? 'EN' : '中';
+            document.getElementById('downloadBtnText').innerText = t.download;
+            document.getElementById('uploadBtnText').innerText = state.img ? t.changePhoto : t.upload;
+            
+            // 更新标签页
+            document.getElementById('tab-faces').innerText = t.tabFaces;
+            document.getElementById('tab-animals').innerText = t.tabAnimals;
+            document.getElementById('tab-kay').innerText = t.tabKay;
+            document.getElementById('tab-others').innerText = t.tabOthers;
+            document.getElementById('tab-custom').innerText = t.tabCustom;
+            
+            // 更新状态栏
+            if (state.isModelLoaded) {
+                document.getElementById('aiStatusText').innerText = t.aiReady;
+            } else {
+                document.getElementById('aiStatusText').innerText = t.aiPreparing;
+            }
+            document.getElementById('maskCount').innerText = `${state.masks.length} ${t.maskCount}`;
+            
+            // 更新占位符文本（使用data属性来存储动态内容）
+            updateWelcomeModal();
+        }
+        
+        // 更新欢迎弹窗文本
+        function updateWelcomeModal() {
+            const t = i18n[state.language];
+            const modal = document.getElementById('welcomeModal');
+            if (!modal) return;
+            
+            // 这里可以选择性地更新弹窗内容，或者在打开时动态生成
+            // 为了简化，我们只在初次打开时使用当前语言
         }
     </script>
 </body>

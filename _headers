@@ -1,0 +1,23 @@
+# Cloudflare Pages 缓存配置
+
+# 静态资源长期缓存（1年）
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/libs/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/models/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML 短期缓存（5分钟）
+/index.html
+  Cache-Control: public, max-age=300
+
+# 默认缓存（1小时）
+/*
+  Cache-Control: public, max-age=3600
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+
