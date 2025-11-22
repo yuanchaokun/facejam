@@ -648,17 +648,17 @@
     </main>
 
     <!-- 移动端底部再贴一次按钮 - 固定在屏幕底部 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-pink-50 via-purple-50 to-pink-50 border-t-4 border-black p-3 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.1)] animate-fade-in-up">
+    <div id="rerollControls" class="hidden lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-pink-50 via-purple-50 to-pink-50 border-t-4 border-black p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.1)] animate-fade-in-up" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
         <div class="text-xs font-black text-gray-700 mb-2 text-center">再贴一次 👇</div>
-        <div class="flex items-center justify-center gap-2">
-            <button onclick="rerollCategory('default')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-[#FF90E8] active:scale-95 transition-all" title="表情">😀</button>
-            <div class="w-px h-8 bg-gray-400"></div>
-            <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-[#FFC900] active:scale-95 transition-all" title="动物">🐶</button>
-            <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-95 transition-all" title="Kay">🎨</button>
-            <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-[#4ADE80] active:scale-95 transition-all" title="植物">🌿</button>
-            <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-[#A78BFA] active:scale-95 transition-all" title="大乱炖">🥘</button>
-            <div class="w-px h-8 bg-gray-400"></div>
-            <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-12 flex items-center justify-center text-2xl bg-white hover:bg-[#F472B6] active:scale-95 transition-all" title="我的">📤</button>
+        <div class="w-full max-w-md mx-auto flex items-center justify-center gap-2">
+            <button onclick="rerollCategory('default')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#FF90E8] active:scale-95 transition-all" title="表情">😀</button>
+            <div class="w-px h-8 bg-gray-400 flex-shrink-0"></div>
+            <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#FFC900] active:scale-95 transition-all" title="动物">🐶</button>
+            <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-95 transition-all" title="Kay">🎨</button>
+            <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#4ADE80] active:scale-95 transition-all" title="植物">🌿</button>
+            <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#A78BFA] active:scale-95 transition-all" title="大乱炖">🥘</button>
+            <div class="w-px h-8 bg-gray-400 flex-shrink-0"></div>
+            <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#F472B6] active:scale-95 transition-all" title="我的">📤</button>
         </div>
     </div>
 
@@ -895,6 +895,8 @@
                 // 重新渲染当前标签页
                 if (state.activeTab === 'kay') {
                     renderKayStickers();
+                } else if (state.activeTab === 'custom') {
+                    renderCustomStickers();
                 } else {
                     renderEmojiGrid(state.activeTab);
                 }
@@ -946,8 +948,8 @@
             customSection.classList.add('hidden');
             kaySection.classList.add('hidden');
             
-            // 在表情、动物、其它、Kay标签显示多选模式
-            if (tabName === 'faces' || tabName === 'animals' || tabName === 'others' || tabName === 'kay') {
+            // 在所有标签都显示多选模式（包括自定义）
+            if (tabName === 'faces' || tabName === 'animals' || tabName === 'others' || tabName === 'kay' || tabName === 'custom') {
                 multiSelectRow.classList.remove('hidden');
             } else {
                 multiSelectRow.classList.add('hidden');
@@ -977,16 +979,33 @@
             container.innerHTML = '';
             state.customStickers.forEach(url => {
                 const btn = document.createElement('button');
-                btn.className = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1 relative group';
+                const isMultiSelected = state.selectedEmojis.includes(url);
+                
+                let baseClass = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1 relative group';
+                
+                if (state.multiSelectMode && isMultiSelected) {
+                    baseClass = 'col-span-1 aspect-square rounded-xl border-3 border-black bg-gradient-to-br from-purple-100 to-pink-100 transition-all overflow-hidden p-1 sticker-btn relative multi-selected group';
+                }
+                
+                btn.className = baseClass;
                 btn.innerHTML = `
                     <img src="${url}" class="custom-sticker-img">
                     <button onclick="deleteCustomSticker(event, '${url.replace(/'/g, "\\'")}', this.parentElement)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity hidden group-hover:flex z-10" title="删除">×</button>
                 `;
-                btn.onclick = function(e) { 
-                    if (e.target.tagName !== 'BUTTON') {
-                        setManualSticker('image', url, this); 
-                    }
-                };
+                
+                if (state.multiSelectMode) {
+                    btn.onclick = function(e) {
+                        if (e.target.tagName !== 'BUTTON') {
+                            selectEmojiForMulti(url, this);
+                        }
+                    };
+                } else {
+                    btn.onclick = function(e) { 
+                        if (e.target.tagName !== 'BUTTON') {
+                            setManualSticker('image', url, this); 
+                        }
+                    };
+                }
                 container.appendChild(btn);
             });
         }
