@@ -356,8 +356,9 @@
                         <p class="text-xs font-bold text-gray-700 mb-2">方式1️⃣：添加白豆微信</p>
                         <div class="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
                             <span class="font-mono font-bold text-pink-600 text-sm">cupaobaidou</span>
-                            <button onclick="navigator.clipboard.writeText('cupaobaidou')" class="text-xs bg-black text-white px-2 py-1 rounded hover:bg-gray-800">复制</button>
+                            <button onclick="copyWechatId('cupaobaidou')" class="text-xs bg-black text-white px-2 py-1 rounded hover:bg-gray-800">复制</button>
                         </div>
+                        <div id="copySuccessMsg" class="hidden mt-2 text-center text-xs text-green-600 font-bold animate-pulse">✅ 复制成功！</div>
                     </div>
                     
                     <!-- 方式2：关注公众号 -->
@@ -690,15 +691,23 @@
         </div>
     </main>
 
-    <!-- 移动端右侧竖直按钮 - 完全贴边 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
-        <div class="bg-black text-white text-[8px] px-1 py-0.5 rounded-l whitespace-nowrap shadow-md">再贴一次👇</div>
-        <button onclick="rerollCategory('default')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="表情">😀</button>
-        <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="动物">🐶</button>
-        <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="Kay">🎨</button>
-        <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="植物">🌿</button>
-        <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="大乱炖">🥘</button>
-        <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="我的">📤</button>
+    <!-- 移动端右侧竖直按钮 - 完全贴边 + 可折叠 -->
+    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1 animate-fade-in-up transition-transform duration-300" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
+        <!-- 折叠/展开按钮 -->
+        <button onclick="toggleRerollControls()" id="rerollToggleBtn" class="neo-btn w-12 h-10 flex items-center justify-center text-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0 font-bold" title="折叠/展开">
+            <span id="rerollToggleIcon">◀</span>
+        </button>
+        
+        <!-- 按钮组 -->
+        <div id="rerollButtonGroup" class="flex flex-col gap-1">
+            <div class="bg-black text-white text-[8px] px-1 py-0.5 rounded-l whitespace-nowrap shadow-md">再贴一次👇</div>
+            <button onclick="rerollCategory('default')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="表情">😀</button>
+            <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="动物">🐶</button>
+            <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="Kay">🎨</button>
+            <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="植物">🌿</button>
+            <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="大乱炖">🥘</button>
+            <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-12 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0" title="我的">📤</button>
+        </div>
     </div>
 
     <script>
@@ -904,6 +913,47 @@
         function trackEvent(eventName, eventParams = {}) {
             if (typeof gtag !== 'undefined') {
                 gtag('event', eventName, eventParams);
+            }
+        }
+        
+        // ======================================
+        // 复制微信号功能
+        // ======================================
+        function copyWechatId(wechatId) {
+            navigator.clipboard.writeText(wechatId).then(() => {
+                const msg = document.getElementById('copySuccessMsg');
+                msg.classList.remove('hidden');
+                setTimeout(() => {
+                    msg.classList.add('hidden');
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制：' + wechatId);
+            });
+        }
+        
+        // ======================================
+        // 折叠/展开"再贴一次"按钮组
+        // ======================================
+        let rerollControlsCollapsed = false;
+        
+        function toggleRerollControls() {
+            const controls = document.getElementById('rerollControls');
+            const buttonGroup = document.getElementById('rerollButtonGroup');
+            const icon = document.getElementById('rerollToggleIcon');
+            
+            rerollControlsCollapsed = !rerollControlsCollapsed;
+            
+            if (rerollControlsCollapsed) {
+                // 折叠：隐藏按钮组，向右移动
+                buttonGroup.style.display = 'none';
+                controls.style.transform = 'translateX(0)';
+                icon.innerText = '▶';
+            } else {
+                // 展开：显示按钮组
+                buttonGroup.style.display = 'flex';
+                controls.style.transform = 'translateX(0)';
+                icon.innerText = '◀';
             }
         }
 
