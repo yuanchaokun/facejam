@@ -1443,13 +1443,20 @@
                 
                 if (results.length > 0) {
                      generateMasksFromDetections();
+                     
+                    // 移动端：显示竖直按钮
                     const mobileReroll = document.getElementById('rerollControls');
                     if (mobileReroll && window.innerWidth < 1024) {
                         mobileReroll.classList.remove('hidden');
                         mobileReroll.classList.add('flex');
                     }
-                     document.getElementById('rerollControlsDesktop').classList.remove('hidden');
-                     document.getElementById('rerollControlsDesktop').classList.add('flex');
+                    
+                    // 桌面端：显示水平按钮
+                    const desktopReroll = document.getElementById('rerollControlsDesktop');
+                    if (desktopReroll && window.innerWidth >= 1024) {
+                        desktopReroll.classList.remove('hidden');
+                        desktopReroll.classList.add('flex');
+                    }
                      
                      // 追踪人脸检测成功
                      trackEvent('face_detected', {
