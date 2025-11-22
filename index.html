@@ -1645,13 +1645,18 @@
 
         function setManualSticker(type, content, btn) {
             state.manualTool = { type, content };
+            console.log('setManualSticker called:', { type, content }); // 调试信息
             document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
             
             // 如果是图片类型，预加载图片
             if (type === 'image') {
-                loadSticker(content).then(() => {
-                    console.log('Sticker preloaded:', content);
+                loadSticker(content).then((img) => {
+                    if (img) {
+                        console.log('Sticker preloaded successfully:', content);
+                    } else {
+                        console.error('Sticker preload failed:', content);
+                    }
                 });
             }
             
@@ -1688,6 +1693,7 @@
                 if (!isHandle) state.dragOffset = { x: pos.x - state.masks[clickedIndex].x, y: pos.y - state.masks[clickedIndex].y };
             } else {
                 // 添加新贴纸
+                console.log('Adding new sticker:', state.manualTool); // 调试信息
                 const newMask = {
                     x: pos.x, y: pos.y, size: 100, type: state.manualTool.type, content: state.manualTool.content
                 };
@@ -1698,8 +1704,16 @@
                 
                 // 如果是图片类型，确保图片已加载
                 if (newMask.type === 'image') {
-                    loadSticker(newMask.content).then(() => {
-                        render();
+                    console.log('Loading image sticker:', newMask.content);
+                    loadSticker(newMask.content).then((img) => {
+                        if (img) {
+                            console.log('Image loaded, rendering:', newMask.content);
+                            render();
+                        } else {
+                            console.error('Image load failed:', newMask.content);
+                            // 即使失败也要渲染，显示占位符
+                            render();
+                        }
                     });
                     return; // 等待图片加载后再渲染
                 }
