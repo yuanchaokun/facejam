@@ -568,7 +568,7 @@
             </div>
             
             <!-- 重随按钮 - 桌面端保持在照片上 -->
-            <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 lg:flex flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
+            <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
                 <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">再贴一次👇</div>
                 <div class="reroll-group">
                     <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
@@ -1360,19 +1360,23 @@
             container.innerHTML = '';
             
             EMOJI_DB.kay.forEach(sticker => {
+                // 创建包装容器
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex flex-col items-center gap-1';
+                
+                // 创建按钮
                 const btn = document.createElement('button');
                 const url = `./assets/${sticker.name}`;
                 const isMultiSelected = state.selectedEmojis.includes(url);
                 
-                let classes = 'aspect-square rounded-xl border-2 border-black hover:border-pink-500 bg-white hover:bg-pink-50 transition-all overflow-hidden p-2 sticker-btn shadow-hard-sm hover:shadow-hard';
+                let classes = 'aspect-square rounded-xl border-2 border-black hover:border-pink-500 bg-white hover:bg-pink-50 transition-all overflow-hidden p-2 sticker-btn shadow-hard-sm hover:shadow-hard w-full';
                 if (state.multiSelectMode && isMultiSelected) {
-                    classes = 'aspect-square rounded-xl border-3 border-black bg-gradient-to-br from-purple-100 to-pink-100 transition-all overflow-hidden p-2 sticker-btn shadow-hard relative multi-selected';
+                    classes = 'aspect-square rounded-xl border-3 border-black bg-gradient-to-br from-purple-100 to-pink-100 transition-all overflow-hidden p-2 sticker-btn shadow-hard relative multi-selected w-full';
                 }
                 
                 btn.className = classes;
                 btn.innerHTML = `
                     <img src="${url}" class="w-full h-full object-contain" alt="${sticker.title}">
-                    <div class="text-[10px] font-bold text-gray-600 mt-1 text-center truncate">${sticker.title}</div>
                 `;
                 
                 if (state.multiSelectMode) {
@@ -1382,7 +1386,16 @@
                 }
                 
                 btn.title = sticker.title;
-                container.appendChild(btn);
+                
+                // 创建名字标签（在框外）
+                const label = document.createElement('div');
+                label.className = 'text-[10px] font-bold text-gray-600 text-center truncate w-full px-1';
+                label.innerText = sticker.title;
+                
+                // 组装
+                wrapper.appendChild(btn);
+                wrapper.appendChild(label);
+                container.appendChild(wrapper);
             });
         }
 
