@@ -500,11 +500,11 @@
                                 <div class="flex items-center justify-center gap-2">
                                     <span class="text-3xl font-black text-black">贴脸酱</span>
                                     <span class="text-3xl">🥰</span>
-                                </div>
+                        </div>
                                 <p class="text-xs text-gray-600 font-medium mt-2">
                                     AI 智能识别 · 一键打码 · 趣味满分
                                 </p>
-                            </div>
+                    </div>
                         </div>
                     </div>
                     
@@ -570,15 +570,15 @@
             <!-- 重随按钮 - 桌面端保持在照片上 -->
             <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
                 <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">再贴一次👇</div>
-                <div class="reroll-group">
-                    <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
-                    <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
+                    <div class="reroll-group">
+                        <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
+                        <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
+                        <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
                     <button onclick="rerollCategory('kay')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300" title="Kay">🎨</button>
-                    <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
-                    <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
-                    <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('custom')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
+                        <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
+                        <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
+                        <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
+                        <button onclick="rerollCategory('custom')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
                 </div>
             </div>
         </div>
@@ -692,7 +692,7 @@
     </main>
 
     <!-- 移动端右侧竖直按钮 - 完全贴边 + 可折叠 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed right-0 bottom-20 z-50 flex flex-col gap-1 animate-fade-in-up transition-transform duration-300" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
+    <div id="rerollControls" class="hidden lg:hidden fixed right-0 z-40 flex flex-col gap-1 animate-fade-in-up transition-transform duration-300" style="bottom: max(1rem, calc(env(safe-area-inset-bottom) + 1rem));">
         <!-- 折叠/展开按钮 -->
         <button onclick="toggleRerollControls()" id="rerollToggleBtn" class="neo-btn w-12 h-10 flex items-center justify-center text-lg bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 active:scale-95 transition-all shadow-md rounded-l-2xl border-r-0 font-bold" title="折叠/展开">
             <span id="rerollToggleIcon">◀</span>
