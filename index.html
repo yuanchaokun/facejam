@@ -460,7 +460,7 @@
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-[1800px] mx-auto p-2 sm:p-4 pb-24 lg:pb-4 flex flex-col lg:flex-row gap-3 sm:gap-6 min-h-0">
+    <main class="flex-1 w-full max-w-[1800px] mx-auto p-2 sm:p-4 flex flex-col lg:flex-row gap-3 sm:gap-6 min-h-0">
         
         <!-- 左侧：编辑画布 -->
         <div class="relative order-2 lg:order-1 flex flex-col h-[65%] min-h-[50vh] lg:h-full w-full lg:flex-1">
@@ -633,7 +633,13 @@
                 
                 <!-- 底部状态栏 -->
                 <div class="p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold flex justify-between items-center shrink-0">
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#00FF00]" id="aiStatusDot"></span> <span id="aiStatusText">AI 准备中...</span></span>
+                    <div class="flex items-center gap-1 sm:gap-2 min-w-0">
+                        <span class="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0" id="aiStatusDot"></span>
+                        <span id="aiStatusText" class="truncate">AI 准备中...</span>
+                        <button id="aiRetryBtn" onclick="retryLoadModels()" class="hidden ml-1 bg-red-600 hover:bg-red-700 px-2 py-0.5 rounded text-[9px] sm:text-[10px] transition-all flex-shrink-0" title="重新加载AI模型">
+                            🔄 重试
+                        </button>
+                    </div>
                     <div class="flex items-center gap-2">
                         <button onclick="showActivationModal()" id="watermarkBtn" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-2 sm:px-3 py-1 rounded-full transition-all text-[10px] sm:text-xs font-bold">
                             <span id="watermarkBtnText">🎨 免费去水印</span>
@@ -647,19 +653,15 @@
         </div>
     </main>
 
-    <!-- 移动端底部再贴一次按钮 - 固定在屏幕底部 -->
-    <div id="rerollControls" class="hidden lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-pink-50 via-purple-50 to-pink-50 border-t-4 border-black p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.1)] animate-fade-in-up" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-        <div class="text-xs font-black text-gray-700 mb-2 text-center">再贴一次 👇</div>
-        <div class="w-full max-w-md mx-auto flex items-center justify-center gap-2">
-            <button onclick="rerollCategory('default')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#FF90E8] active:scale-95 transition-all" title="表情">😀</button>
-            <div class="w-px h-8 bg-gray-400 flex-shrink-0"></div>
-            <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#FFC900] active:scale-95 transition-all" title="动物">🐶</button>
-            <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-95 transition-all" title="Kay">🎨</button>
-            <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#4ADE80] active:scale-95 transition-all" title="植物">🌿</button>
-            <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#A78BFA] active:scale-95 transition-all" title="大乱炖">🥘</button>
-            <div class="w-px h-8 bg-gray-400 flex-shrink-0"></div>
-            <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-12 flex-shrink-0 flex items-center justify-center text-2xl bg-white hover:bg-[#F472B6] active:scale-95 transition-all" title="我的">📤</button>
-        </div>
+    <!-- 移动端底部再贴一次按钮 - 竖直排列靠右 -->
+    <div id="rerollControls" class="hidden lg:hidden fixed right-2 bottom-20 z-50 flex flex-col gap-2 animate-fade-in-up" style="bottom: max(5rem, calc(env(safe-area-inset-bottom) + 5rem));">
+        <div class="bg-black text-white text-[10px] px-2 py-1 rounded-lg whitespace-nowrap shadow-lg">再贴一次👇</div>
+        <button onclick="rerollCategory('default')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-[#FF90E8] active:scale-90 transition-all shadow-lg" title="表情">😀</button>
+        <button onclick="rerollCategory('animals')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-[#FFC900] active:scale-90 transition-all shadow-lg" title="动物">🐶</button>
+        <button onclick="rerollCategory('kay')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 active:scale-90 transition-all shadow-lg" title="Kay">🎨</button>
+        <button onclick="rerollCategory('plants')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-[#4ADE80] active:scale-90 transition-all shadow-lg" title="植物">🌿</button>
+        <button onclick="rerollCategory('chaos')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-[#A78BFA] active:scale-90 transition-all shadow-lg" title="大乱炖">🥘</button>
+        <button onclick="rerollCategory('custom')" class="neo-btn w-14 h-14 flex items-center justify-center text-2xl bg-white hover:bg-[#F472B6] active:scale-90 transition-all shadow-lg" title="我的">📤</button>
     </div>
 
     <script>
@@ -872,17 +874,35 @@
         async function init() {
             renderEmojiGrid('faces');
             loadCustomStickersFromStorage(); // 加载自定义贴纸
+            
+            const statusDot = document.getElementById('aiStatusDot');
+            const statusText = document.getElementById('aiStatusText');
+            const retryBtn = document.getElementById('aiRetryBtn');
+            
             try {
+                statusDot.className = 'w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0 animate-pulse';
+                statusText.innerText = '🤖 AI 加载中...';
+                
                 // 尝试加载模型
                 await loadModels();
                 state.isModelLoaded = true;
                 console.log("Models loaded from:", MODEL_URL);
-                document.getElementById('aiStatusDot').classList.add('bg-[#00FF00]');
-                document.getElementById('aiStatusText').innerText = i18n[state.language].aiReady;
+                
+                statusDot.className = 'w-2 h-2 rounded-full bg-green-500 flex-shrink-0';
+                statusText.innerText = '✅ ' + i18n[state.language].aiReady;
+                retryBtn.classList.add('hidden');
             } catch (e) {
                 console.error("Failed to load models:", e);
-                document.getElementById('aiStatusText').innerText = i18n[state.language].aiOffline;
-                document.getElementById('aiStatusDot').classList.add('bg-red-500');
+                statusDot.className = 'w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-pulse';
+                statusText.innerText = '❌ AI 离线';
+                retryBtn.classList.remove('hidden');
+                
+                // 显示更详细的错误提示（仅在控制台）
+                console.error("AI加载失败详情:", {
+                    error: e.message,
+                    stack: e.stack,
+                    modelUrl: MODEL_URL
+                });
             }
             window.addEventListener('keydown', handleKeyDown);
             
@@ -926,6 +946,40 @@
         }
         
         window.onload = init;
+        
+        // 重试加载AI模型
+        async function retryLoadModels() {
+            const statusDot = document.getElementById('aiStatusDot');
+            const statusText = document.getElementById('aiStatusText');
+            const retryBtn = document.getElementById('aiRetryBtn');
+            
+            try {
+                retryBtn.disabled = true;
+                retryBtn.innerText = '⏳ 重试中...';
+                statusDot.className = 'w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0 animate-pulse';
+                statusText.innerText = '🤖 AI 重新加载中...';
+                
+                // 重新加载模型
+                await loadModels();
+                state.isModelLoaded = true;
+                
+                statusDot.className = 'w-2 h-2 rounded-full bg-green-500 flex-shrink-0';
+                statusText.innerText = '✅ AI 就绪';
+                retryBtn.classList.add('hidden');
+                
+                console.log("AI models reloaded successfully!");
+            } catch (e) {
+                console.error("Retry failed:", e);
+                statusDot.className = 'w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-pulse';
+                statusText.innerText = '❌ AI 离线';
+                retryBtn.disabled = false;
+                retryBtn.innerText = '🔄 重试';
+                retryBtn.classList.remove('hidden');
+                
+                // 给用户更友好的提示
+                alert('AI 模型加载失败 😢\n\n可能原因：\n1. 网络连接不稳定\n2. CDN 资源加载失败\n\n建议：\n• 检查网络连接\n• 刷新页面重试\n• 稍后再试');
+            }
+        }
 
         // UI逻辑
         function switchTab(tabName) {
@@ -1836,9 +1890,13 @@
             
             // 更新状态栏
             if (state.isModelLoaded) {
-                document.getElementById('aiStatusText').innerText = t.aiReady;
+                document.getElementById('aiStatusText').innerText = '✅ ' + t.aiReady;
             } else {
-                document.getElementById('aiStatusText').innerText = t.aiPreparing;
+                const statusText = document.getElementById('aiStatusText').innerText;
+                // 如果是离线状态，保持"❌ AI 离线"
+                if (!statusText.includes('离线') && !statusText.includes('Offline')) {
+                    document.getElementById('aiStatusText').innerText = '🤖 ' + t.aiPreparing;
+                }
             }
             document.getElementById('maskCount').innerText = `${state.masks.length} ${t.maskCount}`;
             
