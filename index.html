@@ -404,62 +404,23 @@
             </div>
             
             <!-- 内容 -->
-            <div class="p-4 sm:p-6 space-y-3 sm:space-y-5">
+            <div class="p-5 sm:p-8 space-y-4 sm:space-y-6">
                 <!-- 介绍 -->
-                <div class="text-center">
-                    <p class="text-sm sm:text-lg font-bold text-gray-800 leading-relaxed">发朋友圈不想露脸？马赛克太丑？</p>
-                    <p class="text-base sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mt-1">把照片交给我，AI 帮你一键"贴"好！</p>
-                </div>
-                
-                <!-- 步骤 -->
-                <div class="space-y-2 sm:space-y-3">
-                    <!-- 步骤1 -->
-                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
-                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
-                            1
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">上传照片</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">点击相机，支持拖拽。AI 会自动找到所有人脸。</p>
-                        </div>
-                    </div>
-                    
-                    <!-- 步骤2 -->
-                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
-                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
-                            2
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">随机贴脸</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">不仅有 Emoji，还有猫猫狗狗。不喜欢？点"再贴一次"重随。</p>
-                        </div>
-                    </div>
-                    
-                    <!-- 步骤3 -->
-                    <div class="flex items-start gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 border-black shadow-hard-sm hover:shadow-hard transition-all">
-                        <div class="step-number w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl border-2 border-black flex items-center justify-center text-white text-lg sm:text-xl font-black shrink-0">
-                            3
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm sm:text-base font-black text-gray-800 mb-0.5 sm:mb-1">自定义 + 保存</h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">上传你自己的表情包，甚至能自动去底！满意就保存。</p>
-                        </div>
-                    </div>
+                <div class="text-center space-y-2 sm:space-y-3">
+                    <p class="text-lg sm:text-2xl font-black text-gray-800">发朋友圈不想露脸？</p>
+                    <p class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">AI 帮你一键贴脸！</p>
                 </div>
                 
                 <!-- 隐私提示 -->
-                <div class="bg-green-50 border-2 border-green-500 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
-                    <span class="text-xl sm:text-2xl shrink-0">🔒</span>
-                    <div class="min-w-0">
-                        <h4 class="text-xs sm:text-sm font-black text-green-700 mb-1">绝对隐私承诺：</h4>
-                        <p class="text-xs text-green-600 leading-relaxed">这是一个纯网页工具，所有计算都在你的设备上完成，照片绝不会上传到任何服务器，断网也能用！</p>
-                    </div>
+                <div class="bg-green-50 border-2 border-green-500 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+                    <span class="text-2xl sm:text-3xl shrink-0">🔒</span>
+                    <p class="text-xs sm:text-sm text-green-700 font-bold leading-relaxed">本地处理，照片不上传，隐私100%安全</p>
                 </div>
                 
                 <!-- 开始按钮 -->
-                <button onclick="closeWelcomeModal()" class="w-full bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-pink-500 text-black font-black text-base sm:text-lg py-3 sm:py-4 rounded-xl sm:rounded-2xl border-3 sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] sm:hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2">
+                <button onclick="closeWelcomeModal()" class="w-full bg-gradient-to-r from-yellow-400 to-pink-400 hover:from-yellow-500 hover:to-pink-500 text-black font-black text-lg sm:text-xl py-4 sm:py-5 rounded-xl sm:rounded-2xl border-3 sm:border-4 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] sm:hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2">
                     <span>开始贴脸！</span>
-                    <span class="text-xl sm:text-2xl">🚀</span>
+                    <span class="text-2xl sm:text-3xl">🚀</span>
                 </button>
             </div>
         </div>
@@ -597,7 +558,7 @@
         </div>
 
         <!-- 右侧：工具栏 -->
-        <div class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0">
+        <div id="stickerSection" class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0 hidden lg:flex">
             <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full border-r-4 border-black">
                 <!-- 选项卡 -->
                 <div class="flex border-b-2 border-black bg-white shrink-0">
@@ -1088,6 +1049,13 @@
                     document.getElementById('rerollControls').classList.add('hidden'); 
                     document.getElementById('rerollControlsDesktop').classList.add('hidden');
                     document.getElementById('uploadBtnText').innerText = i18n[state.language].changePhoto;
+                    
+                    // 移动端：显示贴纸选择区
+                    const stickerSection = document.getElementById('stickerSection');
+                    if (stickerSection && window.innerWidth < 1024) {
+                        stickerSection.classList.remove('hidden');
+                        stickerSection.classList.add('flex');
+                    }
                     
                     showLoading(true, true);
                     await detectFacesAndEmotions();
