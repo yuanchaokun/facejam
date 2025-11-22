@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FaceJam | 糊脸酱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: '#FFFDF5',
+                        dark: '#000000',
+                        accent1: '#FF90E8', 
+                        accent2: '#23A6D5', 
+                        accent3: '#FFC900', 
+                    },
+                    boxShadow: {
+                        'hard': '4px 4px 0px 0px #000000',
+                        'hard-sm': '2px 2px 0px 0px #000000',
+                        'none': '0px 0px 0px 0px #000000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FFFDF5;
+            background-image: radial-gradient(#000000 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: #000;
+            height: 100vh; 
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        canvas {
+            touch-action: none;
+            display: block; 
+        }
+
+        .neo-card {
+            background: #FFFFFF;
+            border: 3px solid #000000;
+            border-radius: 1rem;
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+
+        @media (max-width: 640px) {
+            .neo-card {
+                box-shadow: 3px 3px 0px 0px #000000;
+                border-width: 2px;
+                border-radius: 0.75rem;
+            }
+        }
+
+        .neo-btn {
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 0.75rem;
+            box-shadow: 4px 4px 0px 0px #000000;
+            transition: all 0.1s ease;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .neo-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #000000;
+        }
+
+        .neo-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px 0px #000000;
+        }
+
+        .sticker-btn {
+            background: #FFFFFF;
+            border: 2px solid #eeeeee;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .sticker-btn:hover {
+            border-color: #000;
+            transform: scale(1.05);
+            background: #fff;
+        }
+
+        .sticker-btn.active {
+            background: #FF90E8;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0px 0px #000;
+            transform: scale(1.1) rotate(-3deg);
+        }
+        
+        .sticker-btn.multi-selected {
+            background: linear-gradient(135deg, #A78BFA 0%, #F472B6 100%);
+            border: 3px solid #000;
+            box-shadow: 3px 3px 0px 0px #000;
+            transform: scale(1.05);
+            position: relative;
+        }
+        
+        .sticker-btn.multi-selected::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #000;
+            color: #fff;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #fff;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #000;
+            border-radius: 5px;
+            border: 2px solid #fff;
+        }
+        
+        .custom-sticker-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .tab-btn {
+            border-bottom: 3px solid transparent;
+            color: #888;
+        }
+        .tab-btn.active {
+            color: #000;
+            border-bottom: 3px solid #000;
+            background-color: rgba(255, 201, 0, 0.2); 
+        }
+        
+        .reroll-group {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid black;
+            border-radius: 1rem;
+            box-shadow: 4px 4px 0 black;
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
+
+        /* --- ⚡️ 原生 CSS 动画部分 (强制生效) --- */
+        
+        @keyframes scanMove {
+            0% { top: -20%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 120%; opacity: 0; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(10px) translateX(-50%); }
+            100% { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 12px; /* 加厚 */
+            background: linear-gradient(to bottom, transparent, #FF90E8, transparent);
+            box-shadow: 0 0 20px #FF90E8, 0 0 40px #FF90E8;
+            z-index: 60;
+            animation: scanMove 1.5s linear infinite; /* 默认动画 */
+            pointer-events: none;
+        }
+
+        .scan-line.fast {
+            animation-duration: 0.8s; /* 快速模式 */
+        }
+
+        /* 扫描网格背景 */
+        .scan-grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(0deg, transparent 24%, rgba(255, 144, 232, .3) 25%, rgba(255, 144, 232, .3) 26%, transparent 27%, transparent 74%, rgba(255, 144, 232, .3) 75%, rgba(255, 144, 232, .3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 144, 232, .3) 25%, rgba(255, 144, 232, .3) 26%, transparent 27%, transparent 74%, rgba(255, 144, 232, .3) 75%, rgba(255, 144, 232, .3) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            animation: pulseGlow 2s infinite;
+            pointer-events: none;
+            z-index: 55;
+        }
+
+        .animate-ripple {
+            animation: ripple 3s infinite;
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <header class="bg-white border-b-4 border-black flex-none py-2 sm:py-3 z-30">
+        <div class="w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg border-2 border-black bg-[#FF90E8] flex items-center justify-center text-lg sm:text-xl shadow-hard-sm shrink-0">
+                    🥰
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="text-lg sm:text-xl font-bold text-black tracking-tight leading-none flex items-center gap-2">
+                        FaceJam
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-pink-400 to-purple-400 text-white text-[10px] sm:text-xs rounded-full transform -rotate-3 shadow-md">✨贴脸酱✨</span>
+                    </h1>
+                    <div class="hidden sm:flex items-center gap-1 mt-1 text-xs font-bold text-green-600">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        纯本地运行
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-2">
+                <button onclick="downloadImage()" id="downloadBtn" class="neo-btn px-3 py-1.5 flex items-center gap-2 bg-[#23A6D5] text-white text-xs sm:text-sm hidden">
+                    <span>💾 保存</span>
+                </button>
+                <button onclick="triggerUpload()" id="uploadBtn" class="neo-btn px-3 py-1.5 flex items-center gap-2 bg-[#FFC900] text-xs sm:text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span id="uploadBtnText">上传</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-[1800px] mx-auto p-2 sm:p-4 flex flex-col lg:flex-row gap-3 sm:gap-6 min-h-0">
+        
+        <!-- 左侧：编辑画布 -->
+        <div class="relative order-2 lg:order-1 flex flex-col h-[65%] min-h-[50vh] lg:h-full w-full lg:flex-1">
+            <div class="neo-card w-full h-full flex items-center justify-center relative bg-white group overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                
+                <!-- Canvas -->
+                <div class="w-full h-full flex items-center justify-center p-2 overflow-hidden">
+                    <canvas id="editorCanvas" class="cursor-crosshair shadow-sm block"></canvas>
+                </div>
+                
+                <!-- 初始空状态 -->
+                <div id="placeholderText" onclick="triggerUpload()" class="absolute inset-0 z-20 flex flex-col items-center justify-center text-slate-400 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div class="relative w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center mb-4 sm:mb-6">
+                        <div class="absolute inset-0 bg-[#FFC900] opacity-20 rounded-full animate-ripple"></div>
+                        <div class="absolute inset-2 bg-[#FFC900] opacity-40 rounded-full animate-ripple" style="animation-delay: 1s;"></div>
+                        <div class="w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-full flex items-center justify-center border-4 border-dashed border-black relative z-10 shadow-hard-sm">
+                            <span class="text-3xl sm:text-4xl">📷</span>
+                        </div>
+                    </div>
+                    <span class="text-lg sm:text-xl font-bold text-black">点击上传照片</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-500 mt-2 bg-gray-100 px-3 py-1 rounded-full">AI 自动识别</span>
+                </div>
+
+                <!-- Loading 遮罩 (强视觉反馈) -->
+                <div id="loadingOverlay" class="hidden absolute inset-0 z-50 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center transition-opacity duration-300">
+                    <!-- 扫描网格 -->
+                    <div class="scan-grid"></div>
+                    
+                    <!-- 激光扫描线 -->
+                    <div class="relative w-full h-full overflow-hidden absolute inset-0 pointer-events-none">
+                        <div id="scanLine" class="scan-line"></div>
+                    </div>
+                    
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 z-50">
+                        <div class="bg-black/80 p-4 rounded-xl border-2 border-white/20 shadow-2xl flex flex-col items-center">
+                            <h3 class="font-bold text-white text-xl sm:text-2xl tracking-wider mb-3" id="loadingTitle">正在扫描...</h3>
+                            <div class="w-48 sm:w-64 h-3 sm:h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-600">
+                                <div id="loadingProgress" class="h-full bg-[#FF90E8] w-0 transition-all duration-300 shadow-[0_0_10px_#FF90E8]"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2" id="loadingSubtitle">加载 AI 模型中...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 微调悬浮条 -->
+                <div id="floatingToolbar" class="hidden absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white border-2 border-black shadow-hard rounded-full px-3 py-2 flex items-center gap-2 sm:gap-3 z-20 whitespace-nowrap max-w-[95%] overflow-x-auto custom-scrollbar">
+                    <span class="text-[10px] sm:text-xs font-bold text-black bg-[#FFC900] px-1.5 py-0.5 rounded border border-black shrink-0">大小</span>
+                    <input type="range" id="sizeSlider" min="20" max="500" value="100" class="w-20 sm:w-32 shrink-0" oninput="updateSelectedSize(this.value)">
+                    <div class="w-0.5 h-5 bg-black shrink-0"></div>
+                    <button onclick="deleteSelected()" class="text-red-500 hover:text-red-600 transition-colors p-1 shrink-0" title="删除">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 重随按钮 - 移到照片外面（仅手机端） -->
+            <div id="rerollControls" class="hidden lg:hidden mt-3 flex-col items-center gap-2 animate-fade-in-up">
+                <div class="bg-black text-white text-[10px] px-2 py-1 rounded shadow-md">换一批👇</div>
+                <div class="reroll-group">
+                    <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
+                    <div class="w-px h-5 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
+                    <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
+                    <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
+                    <div class="w-px h-5 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('custom')" class="neo-btn w-10 h-9 flex items-center justify-center text-lg bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
+                </div>
+            </div>
+            
+            <!-- 重随按钮 - 桌面端保持在照片上 -->
+            <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 lg:flex flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
+                <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">换一批👇</div>
+                <div class="reroll-group">
+                    <button onclick="rerollCategory('default')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
+                    <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('animals')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
+                    <button onclick="rerollCategory('plants')" class="neo-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
+                    <button onclick="rerollCategory('chaos')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
+                    <div class="w-px h-5 sm:h-6 bg-gray-300 my-auto"></div>
+                    <button onclick="rerollCategory('custom')" class="neo-btn w-10 h-9 sm:w-12 sm:h-10 flex items-center justify-center text-lg sm:text-xl bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：工具栏 -->
+        <div class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0">
+            <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full">
+                <!-- 选项卡 -->
+                <div class="flex border-b-2 border-black bg-white shrink-0">
+                    <button onclick="switchTab('faces')" class="tab-btn active flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-faces">表情</button>
+                    <button onclick="switchTab('animals')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-animals">动物</button>
+                    <button onclick="switchTab('others')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-others">其它</button>
+                    <button onclick="switchTab('custom')" class="tab-btn flex-1 py-2 sm:py-3 text-xs sm:text-base font-bold hover:bg-gray-50 transition-colors" id="tab-custom">自定义</button>
+                </div>
+
+                <!-- 滚动区域 -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-4 bg-[#fafafa] min-h-0">
+                    <!-- Multi-select mode toggle -->
+                    <div id="multiSelectToggleRow" class="mb-3 sm:mb-4 bg-gradient-to-r from-purple-100 to-pink-100 p-3 rounded-xl border-2 border-black shadow-hard-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🎯</span>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold">多选模式</span>
+                                    <span class="text-[10px] text-gray-600 font-medium">选多个emoji批量贴脸</span>
+                                </div>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="multiSelectToggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label for="multiSelectToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div id="multiSelectApplyBtn" class="hidden mt-3 neo-btn py-2 bg-gradient-to-r from-pink-400 to-purple-400 text-white text-center font-bold text-sm hover:from-pink-500 hover:to-purple-500" onclick="applyMultiSelectEmojis()">
+                            ✨ 一键贴上 (<span id="multiSelectCount">0</span>个)
+                        </div>
+                    </div>
+                    
+                    <div id="emojiGrid" class="grid grid-cols-5 sm:grid-cols-6 gap-2 sm:gap-3 content-start pb-10"></div>
+                    <!-- 自定义区域 -->
+                    <div id="customSection" class="hidden space-y-3 sm:space-y-4 pb-10">
+                        <div class="flex items-center justify-between bg-white p-2 rounded-lg border-2 border-gray-200">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🪄</span>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold">自动智能去底</span>
+                                    <span class="text-[10px] text-gray-400 font-medium">仅限纯色(白/黑)背景</span>
+                                </div>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="bgRemoveToggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                <label for="bgRemoveToggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-2">
+                            <button onclick="document.getElementById('customFileUpload').click()" class="neo-btn py-2 sm:py-3 flex flex-col items-center justify-center gap-1 bg-[#FF90E8] text-white hover:bg-[#FFC900]">
+                                <span class="text-lg sm:text-xl">📂</span>
+                                <span class="text-[10px] sm:text-xs">上传本地图</span>
+                            </button>
+                            <button onclick="promptForCustomSticker()" class="neo-btn py-2 sm:py-3 flex flex-col items-center justify-center gap-1 bg-[#23A6D5] text-white hover:bg-[#FFC900]">
+                                <span class="text-lg sm:text-xl">🔗</span>
+                                <span class="text-[10px] sm:text-xs">贴链接</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 sm:gap-3" id="customStickerContainer"></div>
+                    </div>
+                </div>
+                
+                <!-- 底部状态栏 -->
+                <div class="p-2 sm:p-3 bg-black text-white text-[10px] sm:text-xs font-bold flex justify-between items-center shrink-0">
+                    <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#00FF00]" id="aiStatusDot"></span> <span id="aiStatusText">AI 准备中...</span></span>
+                    <span id="maskCount" class="bg-white text-black px-2 py-0.5 rounded-full">0 遮挡</span>
+                </div>
+            </div>
+            <input type="file" id="imageUpload" accept="image/*" class="hidden" onclick="this.value=null" onchange="handleImageUpload(event)" />
+            <input type="file" id="customFileUpload" accept="image/*" multiple class="hidden" onclick="this.value=null" onchange="handleCustomFileUpload(event)" />
+        </div>
+    </main>
+
+    <script>
+        // 数据
+        const EMOJI_DB = {
+            faces: ['😎', '🥰', '😍', '😘', '🤪', '😆', '🤣', '😂', '😁', '😊', '😇', '🤩', '🥳', '🤗', '😋', '😛', '😝', '😜', '🤓', '🤠', '👻', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🤔', '🤫', '🤭', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '😪', '🤐', '🥴', '🤧', '😷', '🤒', '🤕', '🤑', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓'],
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐵', '🙈', '🙉', '🙊', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦉', '🐺', '🐗', '🦄', '🦍', '🦧', '🦛'],
+            plants: ['🍄', '🎃', '💐', '🌷', '🌹', '🌺', '🌸', '🌼', '🌻', '🍀', '🍁', '🍃', '🪴', '🌰', '🌚', '🌝', '🌞', '🌟', '✨'],
+            others: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '💣', '💥', '💢', '💤', '💩', '🔥', '✨', '🌟', '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🎱', '🔮', '🧿', '🍩', '🍪', '🍔', '🍕', '🍙', '🍘', '🍣', '🎂', '🧁', '🥧']
+        };
+        const AI_EMOTION_MAP = {
+            neutral: ['😎', '😐', '😶', '😶‍🌫️', '🐸', '🤖', '🌝', '🌚', '🗿', '🐱', '🐼', '🤔'],
+            happy: ['😄', '😃', '😀', '😁', '😆', '😅', '🤣', '😂', '😊', '😇', '🥰', '😍', '🤩', '🤪', '🥳', '🤗', '😋'],
+            sad: ['😔', '😪', '🤤', '😴', '😷', '🤒', '🤥', '🤕', '🥺', '😢', '😭', '😿', '🥀'],
+            angry: ['😤', '😠', '😡', '🤬', '😈', '👿', '👺', '💢', '🗯', '😒', '🙄'],
+            fearful: ['😨', '😰', '😥', '😓', '🤗', '🥶', '😱', '😖', '😣', '😬', '🫣', '🙀'],
+            disgusted: ['🤢', '🥴', '😵', '🤯', '😷', '🤧', '😣', '😖'],
+            surprised: ['😮', '😯', '😲', '😳', '🥺', '😦', '😧', '🤯', '😱', '🙀', '🤩']
+        };
+
+        const state = {
+            isModelLoaded: false,
+            manualTool: { type: 'emoji', content: '😎' },
+            masks: [], 
+            rawDetections: [],
+            selectedMaskIndex: -1,
+            isDragging: false,
+            isResizing: false, 
+            dragStartIndex: -1,
+            dragOffset: { x: 0, y: 0 },
+            img: null,
+            scale: 1,
+            loadedStickerImages: {},
+            customStickers: [], 
+            canvasOffset: { left: 0, top: 0 },
+            activeTab: 'faces',
+            scanTimeout: null,
+            dpr: window.devicePixelRatio || 1,
+            multiSelectMode: false,
+            selectedEmojis: []
+        };
+
+        const canvas = document.getElementById('editorCanvas');
+        const ctx = canvas.getContext('2d');
+        const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+
+        // 核心初始化
+        async function init() {
+            renderEmojiGrid('faces');
+            try {
+                await Promise.all([
+                    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+                ]);
+                state.isModelLoaded = true;
+                console.log("Models loaded");
+                document.getElementById('aiStatusDot').classList.add('bg-[#00FF00]');
+                document.getElementById('aiStatusText').innerText = "AI 就绪";
+            } catch (e) {
+                console.error(e);
+                document.getElementById('aiStatusText').innerText = "AI 离线";
+                document.getElementById('aiStatusDot').classList.add('bg-red-500');
+            }
+            window.addEventListener('keydown', handleKeyDown);
+            
+            // Multi-select toggle listener
+            document.getElementById('multiSelectToggle').addEventListener('change', (e) => {
+                state.multiSelectMode = e.target.checked;
+                state.selectedEmojis = [];
+                updateMultiSelectUI();
+                renderEmojiGrid(state.activeTab);
+            });
+            
+            setTimeout(resizeCanvas, 500);
+        }
+        window.onload = init;
+
+        // UI逻辑
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            const grid = document.getElementById('emojiGrid');
+            const customSection = document.getElementById('customSection');
+            if (tabName === 'custom') {
+                grid.innerHTML = ''; 
+                customSection.classList.remove('hidden');
+            } else {
+                customSection.classList.add('hidden');
+                renderEmojiGrid(tabName);
+            }
+        }
+
+        function renderEmojiGrid(category) {
+            const grid = document.getElementById('emojiGrid');
+            grid.innerHTML = ''; 
+            if (category === 'faces') {
+                 const mosaicBtn = document.createElement('button');
+                mosaicBtn.className = `sticker-btn w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl ${state.manualTool.content === 'mosaic' ? 'active' : ''}`;
+                mosaicBtn.innerHTML = '🌫️';
+                mosaicBtn.onclick = () => setManualSticker('mosaic', 'mosaic', mosaicBtn);
+                if (!state.multiSelectMode) grid.appendChild(mosaicBtn);
+            }
+            const list = EMOJI_DB[category] || [];
+            const fragment = document.createDocumentFragment();
+            list.forEach(emoji => {
+                const btn = document.createElement('button');
+                const isActive = state.manualTool.type === 'emoji' && state.manualTool.content === emoji;
+                const isMultiSelected = state.selectedEmojis.includes(emoji);
+                let classes = 'sticker-btn w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl sm:text-2xl';
+                if (state.multiSelectMode && isMultiSelected) {
+                    classes += ' multi-selected';
+                } else if (!state.multiSelectMode && isActive) {
+                    classes += ' active';
+                }
+                btn.className = classes;
+                btn.innerText = emoji;
+                
+                if (state.multiSelectMode) {
+                    btn.onclick = () => toggleEmojiSelection(emoji, btn);
+                } else {
+                    btn.onclick = () => setManualSticker('emoji', emoji, btn);
+                }
+                fragment.appendChild(btn);
+            });
+            grid.appendChild(fragment);
+        }
+
+        // 业务逻辑
+        function triggerUpload() { document.getElementById('imageUpload').click(); }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (state.scanTimeout) clearTimeout(state.scanTimeout);
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = async () => {
+                    state.img = img;
+                    state.masks = [];
+                    state.selectedMaskIndex = -1;
+                    
+                    // 立即渲染
+                    resizeCanvas();
+                    document.getElementById('placeholderText').classList.add('hidden');
+                    document.getElementById('downloadBtn').classList.remove('hidden');
+                    document.getElementById('rerollControls').classList.add('hidden'); 
+                    document.getElementById('rerollControlsDesktop').classList.add('hidden');
+                    document.getElementById('uploadBtnText').innerText = "换张";
+                    
+                    showLoading(true, true);
+                    await detectFacesAndEmotions();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleCustomFileUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            const shouldRemoveBg = document.getElementById('bgRemoveToggle').checked;
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    let url = event.target.result;
+                    if (shouldRemoveBg) {
+                        processRemoveBackground(url, (processedUrl) => addCustomStickerToLibrary(processedUrl));
+                    } else {
+                        addCustomStickerToLibrary(url);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            switchTab('custom');
+        }
+
+        function processRemoveBackground(imgSrc, callback) {
+            const img = new Image();
+            img.onload = () => {
+                const c = document.createElement('canvas');
+                const ctx = c.getContext('2d');
+                c.width = img.width;
+                c.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, c.width, c.height);
+                const data = imageData.data;
+                const r0 = data[0], g0 = data[1], b0 = data[2];
+                const threshold = 30;
+                for (let i = 0; i < data.length; i += 4) {
+                    const dist = Math.sqrt((data[i]-r0)**2 + (data[i+1]-g0)**2 + (data[i+2]-b0)**2);
+                    if (dist < threshold) data[i+3] = 0;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                callback(c.toDataURL());
+            };
+            img.src = imgSrc;
+        }
+
+        function promptForCustomSticker() {
+            const input = prompt("输入图片链接（逗号分隔）:", "https://");
+            if (!input) return;
+            input.split(/[\n,]+/).map(u => u.trim()).filter(u => u && u !== "https://").forEach(u => addCustomStickerToLibrary(u));
+            switchTab('custom');
+        }
+
+        function addCustomStickerToLibrary(url) {
+            if (state.customStickers.includes(url)) return;
+            state.customStickers.push(url);
+            const container = document.getElementById('customStickerContainer');
+            const btn = document.createElement('button');
+            btn.className = 'col-span-1 aspect-square rounded-xl border-2 border-dashed border-black hover:bg-[#FF90E8] hover:text-white text-black flex items-center justify-center transition-colors bg-white sticker-btn overflow-hidden p-1';
+            btn.innerHTML = `<img src="${url}" class="custom-sticker-img">`;
+            btn.onclick = function() { setManualSticker('image', url, this); };
+            container.insertBefore(btn, container.firstChild);
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = container.clientWidth; 
+            const maxHeight = container.clientHeight;
+
+            if (!state.img) {
+                if (maxWidth > 0 && maxHeight > 0) {
+                     canvas.style.width = maxWidth + 'px';
+                     canvas.style.height = maxHeight + 'px';
+                     canvas.width = maxWidth * state.dpr;
+                     canvas.height = maxHeight * state.dpr;
+                     ctx.scale(state.dpr, state.dpr);
+                }
+                return;
+            }
+
+            let w = state.img.width;
+            let h = state.img.height;
+            const scaleW = maxWidth / w;
+            const scaleH = maxHeight / h;
+            const scale = Math.min(scaleW, scaleH, 1);
+
+            canvas.style.width = (w * scale) + 'px';
+            canvas.style.height = (h * scale) + 'px';
+            canvas.width = (w * scale) * state.dpr;
+            canvas.height = (h * scale) * state.dpr;
+            ctx.scale(state.dpr, state.dpr);
+            state.scale = scale;
+            
+            const rect = canvas.getBoundingClientRect();
+            state.canvasOffset = { left: rect.left, top: rect.top };
+            render();
+        }
+
+        async function detectFacesAndEmotions() {
+            state.scanTimeout = setTimeout(() => { showLoading(false); console.warn("Timeout"); }, 15000);
+
+            if (!state.isModelLoaded) await init();
+            if (!state.isModelLoaded) { showLoading(false); return; }
+            
+            const progressBar = document.getElementById('loadingProgress');
+            const loadingText = document.getElementById('loadingTitle');
+            
+            try {
+                progressBar.style.width = '20%';
+                loadingText.innerText = "扫描中...";
+                const options = new faceapi.SsdMobilenetv1Options({ minConfidence: 0.25 });
+                await new Promise(r => setTimeout(r, 500));
+                
+                progressBar.style.width = '60%';
+                const results = await faceapi.detectAllFaces(state.img, options).withFaceExpressions();
+                
+                progressBar.style.width = '95%';
+                state.rawDetections = results;
+                
+                if (results.length > 0) {
+                     generateMasksFromDetections();
+                     document.getElementById('rerollControls').classList.remove('hidden');
+                     document.getElementById('rerollControls').classList.add('flex');
+                     document.getElementById('rerollControlsDesktop').classList.remove('hidden');
+                     document.getElementById('rerollControlsDesktop').classList.add('flex');
+                }
+                updateMaskCount();
+                progressBar.style.width = '100%';
+                await new Promise(r => setTimeout(r, 300));
+            } catch (err) {
+                console.error(err);
+            } finally {
+                if (state.scanTimeout) clearTimeout(state.scanTimeout);
+                showLoading(false);
+                render();
+            }
+        }
+
+        function generateMasksFromDetections(category = 'default') {
+            state.masks = []; 
+            state.selectedMaskIndex = -1;
+            
+            let sessionPool = [];
+            if (category !== 'default') {
+                let pool = category === 'custom' ? state.customStickers : 
+                           category === 'chaos' ? [...EMOJI_DB.animals, ...EMOJI_DB.plants, ...EMOJI_DB.others] :
+                           EMOJI_DB[category];
+                if (!pool || pool.length === 0) { alert("没有可用贴纸"); return; }
+                sessionPool = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
+            }
+
+            state.rawDetections.forEach(result => {
+                const box = result.detection.box;
+                let randomEmoji, type = 'emoji';
+                
+                if (category === 'default') {
+                    const emotionName = result.expressions.asSortedArray()[0].expression;
+                    const list = AI_EMOTION_MAP[emotionName] || AI_EMOTION_MAP['neutral'];
+                    randomEmoji = list[Math.floor(Math.random() * list.length)];
+                } else {
+                    randomEmoji = sessionPool[Math.floor(Math.random() * sessionPool.length)];
+                    if (category === 'custom') type = 'image';
+                }
+
+                const s = state.scale;
+                state.masks.push({
+                    x: (box.x * s) + (box.width * s / 2),
+                    y: (box.y * s) + (box.height * s / 2),
+                    size: Math.max(box.width * s, box.height * s) * 1.4,
+                    type: type,
+                    content: randomEmoji,
+                    detectedEmotion: category === 'default' ? result.expressions.asSortedArray()[0].expression : null
+                });
+            });
+            render();
+        }
+
+        async function rerollCategory(category) {
+            if (state.rawDetections.length === 0) return;
+            if (category === 'custom' && state.customStickers.length === 0) {
+                alert("请先上传自定义图片"); switchTab('custom'); return;
+            }
+            showLoading(true, false);
+            document.getElementById('loadingTitle').innerText = "重新生成...";
+            await new Promise(r => setTimeout(r, 800));
+            generateMasksFromDetections(category);
+            showLoading(false);
+        }
+
+        function render() {
+            if (!state.img) return;
+            const cssW = canvas.width / state.dpr;
+            const cssH = canvas.height / state.dpr;
+            ctx.clearRect(0, 0, cssW, cssH);
+            ctx.drawImage(state.img, 0, 0, cssW, cssH);
+
+            state.masks.forEach((mask, i) => {
+                ctx.save();
+                ctx.translate(mask.x, mask.y);
+
+                if (i === state.selectedMaskIndex) {
+                    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.setLineDash([6, 6]);
+                    ctx.beginPath(); ctx.arc(0, 0, mask.size / 1.7, 0, Math.PI * 2); ctx.stroke();
+                    ctx.fillStyle = '#FFC900'; ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.setLineDash([]);
+                    ctx.beginPath(); ctx.arc(0, mask.size / 1.7, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                }
+
+                if (mask.type === 'mosaic') {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.beginPath(); ctx.arc(0, 0, mask.size / 2, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#FFF'; ctx.font = `800 ${mask.size * 0.15}px sans-serif`;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('MASK', 0, 0);
+                } else if (mask.type === 'emoji') {
+                    ctx.font = `${mask.size}px "Segoe UI Emoji", sans-serif`;
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.shadowColor = "rgba(0,0,0,0.3)"; ctx.shadowBlur = 0; ctx.shadowOffsetX = 4; ctx.shadowOffsetY = 4;
+                    ctx.fillText(mask.content, 0, mask.size * 0.12);
+                } else if (mask.type === 'image') {
+                    const img = state.loadedStickerImages[mask.content];
+                    if (!img) loadSticker(mask.content).then(() => render());
+                    else {
+                        ctx.shadowColor = "rgba(0,0,0,0.2)"; ctx.shadowBlur = 4;
+                        ctx.drawImage(img, -mask.size / 2, -mask.size / 2, mask.size, mask.size);
+                    }
+                }
+                ctx.restore();
+            });
+            
+            const toolbar = document.getElementById('floatingToolbar');
+            const emoDisplay = document.getElementById('detectedEmotionDisplay');
+            if (state.selectedMaskIndex !== -1) {
+                toolbar.classList.remove('hidden'); toolbar.classList.add('flex');
+                document.getElementById('sizeSlider').value = state.masks[state.selectedMaskIndex].size;
+            } else {
+                toolbar.classList.add('hidden'); toolbar.classList.remove('flex');
+            }
+        }
+
+        function setManualSticker(type, content, btn) {
+            state.manualTool = { type, content };
+            document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            if (state.selectedMaskIndex !== -1) {
+                state.masks[state.selectedMaskIndex].type = type;
+                state.masks[state.selectedMaskIndex].content = content;
+                render();
+            }
+        }
+
+        function handleStart(e) {
+            if (!state.img) return;
+            if (e.target !== canvas) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            let clickedIndex = -1, isHandle = false;
+
+            for (let i = state.masks.length - 1; i >= 0; i--) {
+                const mask = state.masks[i];
+                const handleY = mask.y + (mask.size / 1.7);
+                if ((pos.x-mask.x)**2 + (pos.y-handleY)**2 < 400) { clickedIndex = i; isHandle = true; break; }
+                if ((pos.x-mask.x)**2 + (pos.y-mask.y)**2 < (mask.size/1.8)**2) { clickedIndex = i; break; }
+            }
+
+            if (clickedIndex !== -1) {
+                state.selectedMaskIndex = clickedIndex;
+                state.isResizing = isHandle;
+                state.isDragging = !isHandle;
+                if (!isHandle) state.dragOffset = { x: pos.x - state.masks[clickedIndex].x, y: pos.y - state.masks[clickedIndex].y };
+            } else {
+                state.masks.push({
+                    x: pos.x, y: pos.y, size: 100, type: state.manualTool.type, content: state.manualTool.content
+                });
+                state.selectedMaskIndex = state.masks.length - 1;
+                state.isResizing = false; state.isDragging = false;
+                updateMaskCount();
+            }
+            render();
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - rect.left, y: cy - rect.top };
+        }
+        
+        function handleMove(e) {
+            if (state.selectedMaskIndex === -1 || (!state.isDragging && !state.isResizing)) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            const mx = cx - rect.left, my = cy - rect.top;
+            const mask = state.masks[state.selectedMaskIndex];
+
+            if (state.isDragging) {
+                mask.x = mx - state.dragOffset.x; mask.y = my - state.dragOffset.y;
+            } else if (state.isResizing) {
+                const dist = Math.sqrt((mx - mask.x)**2 + (my - mask.y)**2);
+                mask.size = Math.max(20, Math.min(dist * 1.7, 800));
+            }
+            render();
+        }
+
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('touchstart', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('mouseup', () => { state.isDragging = false; state.isResizing = false; });
+        window.addEventListener('touchend', () => { state.isDragging = false; state.isResizing = false; });
+
+        function updateSelectedSize(val) {
+            if (state.selectedMaskIndex !== -1) {
+                state.masks[state.selectedMaskIndex].size = parseInt(val);
+                render();
+            }
+        }
+        function deleteSelected() {
+            if (state.selectedMaskIndex !== -1) {
+                state.masks.splice(state.selectedMaskIndex, 1);
+                state.selectedMaskIndex = -1;
+                render();
+                updateMaskCount();
+            }
+        }
+        function handleKeyDown(e) {
+            if (state.selectedMaskIndex !== -1 && ['Enter','Backspace','Delete'].includes(e.key)) {
+                e.preventDefault(); deleteSelected();
+            }
+        }
+        function updateMaskCount() { document.getElementById('maskCount').innerText = `${state.masks.length} 遮挡`; }
+        
+        function loadSticker(url) {
+            return new Promise(resolve => {
+                if (state.loadedStickerImages[url]) return resolve(state.loadedStickerImages[url]);
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => { state.loadedStickerImages[url] = img; resolve(img); };
+                img.src = url;
+            });
+        }
+        
+        // Multi-select functions
+        function toggleEmojiSelection(emoji, btn) {
+            const index = state.selectedEmojis.indexOf(emoji);
+            if (index > -1) {
+                state.selectedEmojis.splice(index, 1);
+                btn.classList.remove('multi-selected');
+            } else {
+                state.selectedEmojis.push(emoji);
+                btn.classList.add('multi-selected');
+            }
+            updateMultiSelectUI();
+        }
+        
+        function updateMultiSelectUI() {
+            const applyBtn = document.getElementById('multiSelectApplyBtn');
+            const count = document.getElementById('multiSelectCount');
+            count.innerText = state.selectedEmojis.length;
+            
+            if (state.multiSelectMode && state.selectedEmojis.length > 0) {
+                applyBtn.classList.remove('hidden');
+            } else {
+                applyBtn.classList.add('hidden');
+            }
+        }
+        
+        function applyMultiSelectEmojis() {
+            if (state.selectedEmojis.length === 0) {
+                alert('请先选择emoji');
+                return;
+            }
+            if (state.rawDetections.length === 0) {
+                alert('请先上传照片');
+                return;
+            }
+            
+            // Apply selected emojis to all detected faces
+            state.masks = [];
+            state.selectedMaskIndex = -1;
+            
+            state.rawDetections.forEach((result, index) => {
+                const box = result.detection.box;
+                const emoji = state.selectedEmojis[index % state.selectedEmojis.length];
+                const s = state.scale;
+                
+                state.masks.push({
+                    x: (box.x * s) + (box.width * s / 2),
+                    y: (box.y * s) + (box.height * s / 2),
+                    size: Math.max(box.width * s, box.height * s) * 1.4,
+                    type: 'emoji',
+                    content: emoji,
+                    detectedEmotion: null
+                });
+            });
+            
+            updateMaskCount();
+            render();
+        }
+
+        function showLoading(show, isSlow) {
+            const el = document.getElementById('loadingOverlay');
+            const scan = document.getElementById('scanLine');
+            if (show) {
+                el.classList.remove('hidden'); el.classList.add('flex');
+                document.getElementById('loadingProgress').style.width = '0%';
+                scan.style.animationDuration = isSlow ? '1.5s' : '0.8s';
+            } else {
+                el.classList.add('hidden'); el.classList.remove('flex');
+            }
+        }
+        
+        function downloadImage() {
+            if (!state.img) return;
+            const link = document.createElement('a');
+            link.download = 'facejam_' + Date.now() + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>
