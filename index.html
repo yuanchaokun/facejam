@@ -526,21 +526,6 @@
                 </div>
             </div>
             
-            <!-- 重随按钮 - 移到照片外面（仅手机端） -->
-            <div id="rerollControls" class="hidden lg:hidden mt-2 mb-1 flex flex-col items-center gap-2 animate-fade-in-up">
-                <div class="bg-black text-white text-[10px] px-3 py-1 rounded-full shadow-md">再贴一次👇</div>
-                <div class="reroll-group">
-                    <button onclick="rerollCategory('default')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#FF90E8]" title="表情">😀</button>
-                    <div class="w-px h-6 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('animals')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#FFC900]" title="动物">🐶</button>
-                    <button onclick="rerollCategory('kay')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300" title="Kay">🎨</button>
-                    <button onclick="rerollCategory('plants')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#4ADE80]" title="植物">🌿</button>
-                    <button onclick="rerollCategory('chaos')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#A78BFA]" title="大乱炖">🥘</button>
-                    <div class="w-px h-6 bg-gray-300 my-auto"></div>
-                    <button onclick="rerollCategory('custom')" class="neo-btn w-12 h-10 flex items-center justify-center text-xl bg-[#FFFDF5] hover:bg-[#F472B6]" title="我的">📤</button>
-                </div>
-            </div>
-            
             <!-- 重随按钮 - 桌面端保持在照片上 -->
             <div id="rerollControlsDesktop" class="hidden absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 lg:flex flex-col items-end gap-2 animate-fade-in-up scale-90 sm:scale-100 origin-bottom-right">
                 <div class="bg-black text-white text-[10px] px-2 py-1 rounded mb-1 transform translate-y-1 shadow-md">再贴一次👇</div>
@@ -654,6 +639,21 @@
                             <span id="watermarkBtnText">🎨 免费去水印</span>
                         </button>
                     <span id="maskCount" class="bg-white text-black px-2 py-0.5 rounded-full">0 遮挡</span>
+                    </div>
+                </div>
+                
+                <!-- 重随按钮 - 仅移动端显示在底部 -->
+                <div id="rerollControls" class="hidden lg:hidden bg-gradient-to-r from-pink-50 to-purple-50 border-t-4 border-black p-3 flex-col items-center gap-2 animate-fade-in-up shrink-0">
+                    <div class="text-xs font-black text-gray-700 mb-1">再贴一次 👇</div>
+                    <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                        <button onclick="rerollCategory('default')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FF90E8] hover:scale-105 transition-transform" title="表情">😀</button>
+                        <div class="w-px h-8 bg-gray-300"></div>
+                        <button onclick="rerollCategory('animals')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#FFC900] hover:scale-105 transition-transform" title="动物">🐶</button>
+                        <button onclick="rerollCategory('kay')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-gradient-to-br hover:from-pink-300 hover:to-purple-300 hover:scale-105 transition-transform" title="Kay">🎨</button>
+                        <button onclick="rerollCategory('plants')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#4ADE80] hover:scale-105 transition-transform" title="植物">🌿</button>
+                        <button onclick="rerollCategory('chaos')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#A78BFA] hover:scale-105 transition-transform" title="大乱炖">🥘</button>
+                        <div class="w-px h-8 bg-gray-300"></div>
+                        <button onclick="rerollCategory('custom')" class="neo-btn w-11 h-11 flex items-center justify-center text-xl bg-white hover:bg-[#F472B6] hover:scale-105 transition-transform" title="我的">📤</button>
                     </div>
                 </div>
             </div>
