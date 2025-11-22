@@ -483,10 +483,10 @@
                 </div>
                 
                 <!-- 初始空状态 -->
-<div id="placeholderText" onclick="triggerUpload()" class="absolute inset-0 z-20 flex flex-col items-center justify-start text-slate-400 cursor-pointer hover:bg-gray-50 transition-colors p-6 pt-12 pb-8 overflow-y-auto">
+                <div id="placeholderText" onclick="triggerUpload()" class="absolute inset-0 z-20 flex flex-col items-center justify-center text-slate-400 cursor-pointer hover:bg-gray-50 transition-colors p-6 pb-8">
                     <!-- 上方：介绍卡片 -->
-                    <div class="w-full max-w-md mb-6">
-                        <div class="relative bg-gradient-to-br from-pink-100 via-purple-100 to-yellow-100 rounded-3xl p-6 border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
+                    <div class="w-full max-w-md mb-4">
+                        <div class="relative bg-gradient-to-br from-pink-100 via-purple-100 to-yellow-100 rounded-3xl p-5 border-4 border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
                             <!-- 装饰性元素 -->
                             <div class="absolute top-2 right-2 text-4xl opacity-20 animate-bounce">🎨</div>
                             <div class="absolute bottom-2 left-2 text-3xl opacity-20 animate-pulse">✨</div>
@@ -500,40 +500,37 @@
                                     <span class="text-3xl font-black text-black">贴脸酱</span>
                                     <span class="text-3xl animate-bounce">🥰</span>
                                 </div>
-                                <p class="text-xs text-gray-600 font-medium mt-3">
+                                <p class="text-xs text-gray-600 font-medium mt-2">
                                     AI 智能识别 · 一键打码 · 趣味满分
                                 </p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 中间：上传按钮 -->
-                    <div class="w-full max-w-sm mb-6">
-                        <button class="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-black text-lg py-4 rounded-2xl border-4 border-black shadow-[6px_6px_0px_0px_#000] hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2">
-                            <span class="text-2xl">📸</span>
-                            <span>点击上传照片</span>
-                        </button>
+                    <!-- 隐私提示 -->
+                    <div class="w-full max-w-md mb-4 flex flex-col items-center gap-1.5 px-4">
+                        <div class="flex items-center gap-2 text-xs text-green-600 font-semibold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span>100%本地处理 · 照片不上传</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-center leading-relaxed">
+                            所有图片仅在您的浏览器中处理，不会上传到任何服务器，绝对安全放心！
+                        </p>
                     </div>
                     
-                    <!-- 下方：相机图标 + 提示 -->
-                    <div class="flex flex-col items-center">
-                        <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mb-3">
-                            <div class="absolute inset-0 bg-[#FFC900] opacity-20 rounded-full animate-ripple"></div>
-                            <div class="absolute inset-2 bg-[#FFC900] opacity-40 rounded-full animate-ripple" style="animation-delay: 1s;"></div>
-                            <div class="w-14 h-14 sm:w-18 sm:h-18 bg-white rounded-full flex items-center justify-center border-4 border-dashed border-black relative z-10 shadow-hard-sm">
-                                <span class="text-2xl sm:text-3xl">📷</span>
+                    <!-- 上传按钮 - 带动态相机图标 -->
+                    <div class="w-full max-w-sm">
+                        <button class="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-black text-lg py-3 px-4 rounded-2xl border-4 border-black shadow-[6px_6px_0px_0px_#000] hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all flex items-center justify-center gap-3">
+                            <!-- 动态相机图标 -->
+                            <div class="relative w-12 h-12 flex items-center justify-center flex-shrink-0">
+                                <div class="absolute inset-0 bg-white opacity-30 rounded-full animate-ripple"></div>
+                                <div class="absolute inset-1 bg-white opacity-50 rounded-full animate-ripple" style="animation-delay: 0.5s;"></div>
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black relative z-10">
+                                    <span class="text-xl">📷</span>
+                                </div>
                             </div>
-                        </div>
-                        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full mb-3">AI 自动识别</span>
-                        <div class="flex flex-col items-center gap-1.5 px-4 max-w-md">
-                            <div class="flex items-center gap-2 text-xs text-green-600 font-semibold">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                <span>100%本地处理 · 照片不上传</span>
-                            </div>
-                            <p class="text-[10px] sm:text-xs text-gray-400 text-center leading-relaxed">
-                                所有图片仅在您的浏览器中处理，不会上传到任何服务器，绝对安全放心！
-                            </p>
-                        </div>
+                            <span class="text-lg">点击上传照片</span>
+                        </button>
                     </div>
                 </div>
 
