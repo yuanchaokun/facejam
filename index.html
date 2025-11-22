@@ -542,8 +542,8 @@
             </div>
         </div>
 
-        <!-- 右侧：工具栏 -->
-        <div id="stickerSection" class="order-1 lg:order-2 h-[35%] lg:h-full lg:w-[380px] w-full flex flex-col min-h-0 shrink-0 hidden lg:flex">
+        <!-- 右侧：工具栏 - 移动端完全隐藏 -->
+        <div id="stickerSection" class="hidden lg:flex order-1 lg:order-2 lg:h-full lg:w-[380px] w-full flex-col min-h-0 shrink-0">
             <div class="neo-card flex flex-col h-full overflow-hidden bg-white w-full border-r-4 border-black">
                 <!-- 选项卡 -->
                 <div class="flex border-b-2 border-black bg-white shrink-0">
@@ -1119,13 +1119,6 @@
                     document.getElementById('rerollControls').classList.add('hidden'); 
                     document.getElementById('rerollControlsDesktop').classList.add('hidden');
                     document.getElementById('uploadBtnText').innerText = i18n[state.language].changePhoto;
-                    
-                    // 移动端：显示贴纸选择区
-                    const stickerSection = document.getElementById('stickerSection');
-                    if (stickerSection && window.innerWidth < 1024) {
-                        stickerSection.classList.remove('hidden');
-                        stickerSection.classList.add('flex');
-                    }
                     
                     showLoading(true, true);
                     await detectFacesAndEmotions();
